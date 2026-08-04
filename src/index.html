@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Quiblo wiki</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Documentation for Quiblo, a free and open-source Android IPTV client: what it is, how it is built, and why it is shaped the way it is.">
+  <meta name="color-scheme" content="dark light">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script>
+    // Set before first paint so the page never flashes the wrong theme. The service takes
+    // over once Angular boots; this only has to get the first frame right.
+    (function () {
+      try {
+        var stored = localStorage.getItem('quiblo-wiki-theme');
+        var dark = stored === 'dark' || ((stored === 'system' || !stored) &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      } catch (e) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>

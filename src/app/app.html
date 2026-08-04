@@ -1,0 +1,96 @@
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <button
+    class="topbar__burger"
+    type="button"
+    [attr.aria-expanded]="navOpen()"
+    aria-controls="sidebar"
+    (click)="navOpen.set(!navOpen())"
+  >
+    <span aria-hidden="true">&#9776;</span>
+    <span class="visually-hidden">Toggle navigation</span>
+  </button>
+
+  <a class="topbar__brand" routerLink="/" (click)="closeNav()">
+    <span class="topbar__mark" aria-hidden="true">Q</span>
+    <span>Quiblo <span class="topbar__brandMuted">wiki</span></span>
+  </a>
+
+  <div class="searchbox">
+    <input
+      type="search"
+      class="searchbox__input"
+      placeholder="Search the wiki…"
+      aria-label="Search the wiki"
+      [value]="search.query()"
+      (input)="onQuery($any($event.target).value)"
+    />
+
+    @if (search.results().length > 0) {
+      <ul class="results">
+        @for (hit of search.results(); track hit.page.slug + hit.sectionId) {
+          <li>
+            <button type="button" (click)="goToHit(hit.page.slug, hit.sectionId)">
+              <span class="results__where">
+                {{ hit.page.title }} <span aria-hidden="true">&rsaquo;</span> {{ hit.sectionTitle }}
+              </span>
+              <span class="results__excerpt" [innerHTML]="hit.excerpt"></span>
+            </button>
+          </li>
+        }
+      </ul>
+    } @else if (search.query().trim().length >= 2) {
+      <div class="results results--empty">Nothing matches “{{ search.query() }}”.</div>
+    }
+  </div>
+
+  <button
+    class="topbar__theme"
+    type="button"
+    (click)="theme.cycle()"
+    [title]="'Theme: ' + theme.choice()"
+  >
+    @switch (theme.choice()) {
+      @case ('light') { <span aria-hidden="true">&#9728;</span> }
+      @case ('dark') { <span aria-hidden="true">&#9790;</span> }
+      @default { <span aria-hidden="true">&#9680;</span> }
+    }
+    <span class="visually-hidden">Theme: {{ theme.choice() }}</span>
+  </button>
+</header>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar" [class.sidebar--open]="navOpen()">
+    <nav aria-label="Wiki contents">
+      @for (part of parts; track part.id) {
+        <p class="sidebar__part">{{ part.title }}</p>
+        <ul class="sidebar__list">
+          @for (page of part.pages; track page.slug) {
+            <li>
+              <a
+                [routerLink]="['/wiki', page.slug]"
+                routerLinkActive="is-active"
+                (click)="closeNav()"
+              >{{ page.title }}</a>
+            </li>
+          }
+        </ul>
+      }
+    </nav>
+  </aside>
+
+  @if (navOpen()) {
+    <button class="scrim" type="button" (click)="closeNav()" aria-label="Close navigation"></button>
+  }
+
+  <main class="main" id="main">
+    <router-outlet />
+    <footer class="footer">
+      <p>
+        Quiblo is free software under the GNU General Public License v3.0 or later. It supplies
+        no content: playlists and accounts are the user’s own.
+      </p>
+    </footer>
+  </main>
+</div>

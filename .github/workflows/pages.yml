@@ -1,0 +1,59 @@
+name: Deploy wiki to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Only the deployment needs write access, and only to Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# A queued deploy supersedes a running one; a half-finished build is never published.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # The tests are cheap and they check the thing most likely to rot in a hand-authored
+      # wiki: a cross-reference pointing at a page that no longer exists.
+      - run: npm test
+
+      # A project site is served from /<repo>/, so the base href has to match or every
+      # asset 404s. Derived from the repository name rather than hardcoded.
+      - run: npx ng build --configuration production --base-href "/${GITHUB_REPOSITORY#*/}/"
+
+      # GitHub Pages has no routing fallback, so a deep link would 404 on refresh. Serving
+      # index.html as the 404 page hands the URL back to the Angular router.
+      - run: cp dist/quiblo-wiki/browser/index.html dist/quiblo-wiki/browser/404.html
+
+      # Stops Jekyll eating files and directories beginning with an underscore.
+      - run: touch dist/quiblo-wiki/browser/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/quiblo-wiki/browser
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

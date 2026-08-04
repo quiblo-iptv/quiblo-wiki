@@ -1,0 +1,133 @@
+/* Design tokens and the small amount of global styling the app needs.
+ *
+ * One palette expressed twice. Every colour in the app is a token, so a theme change is a
+ * change to this block and nowhere else — and nothing can be styled in a way that only
+ * works in one of the two.
+ */
+
+:root,
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: #0d0e12;
+  --bg-raised: #14161c;
+  --bg-sunken: #090a0d;
+  --border: #262a33;
+  --border-strong: #363c48;
+  --text: #e7e9ee;
+  --text-muted: #98a0b0;
+  --text-faint: #6b7484;
+  --accent: #9fa4ff;
+  --accent-soft: rgba(159, 164, 255, 0.14);
+  --mark: rgba(159, 164, 255, 0.3);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --bg: #fbfbfd;
+  --bg-raised: #ffffff;
+  --bg-sunken: #f1f2f6;
+  --border: #e2e4ea;
+  --border-strong: #c9cdd7;
+  --text: #1a1c22;
+  --text-muted: #5a616f;
+  --text-faint: #868d9c;
+  --accent: #4a4fd0;
+  --accent-soft: rgba(74, 79, 208, 0.1);
+  --mark: rgba(74, 79, 208, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--accent);
+  text-decoration-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  text-decoration-color: currentColor;
+}
+
+code {
+  font-family: ui-monospace, 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.875em;
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+}
+
+pre {
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.15rem;
+  overflow-x: auto;
+}
+
+pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: 0.9em;
+}
+
+mark {
+  background: var(--mark);
+  color: inherit;
+  border-radius: 3px;
+  padding: 0 0.15em;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Keyboard users get to the content without walking the whole sidebar. */
+.skip {
+  position: absolute;
+  left: -9999px;
+  z-index: 100;
+  padding: 0.6rem 1rem;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+}
+
+.skip:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}

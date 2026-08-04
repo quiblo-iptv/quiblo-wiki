@@ -1,0 +1,57 @@
+@let entry = located();
+
+@if (entry) {
+  <article class="page">
+    <header class="page__head">
+      <p class="page__part">{{ entry.part.title }}</p>
+      <h1>{{ entry.page.title }}</h1>
+      <p class="page__summary">{{ entry.page.summary }}</p>
+    </header>
+
+    @if (sections().length > 1) {
+      <nav class="contents" aria-label="On this page">
+        <p class="contents__label">On this page</p>
+        <ul>
+          @for (section of sections(); track section.id) {
+            <li><a [href]="'#' + section.id">{{ section.title }}</a></li>
+          }
+        </ul>
+      </nav>
+    }
+
+    @for (section of sections(); track section.id) {
+      <section class="section" [id]="section.id">
+        <h2>
+          <a class="section__anchor" [href]="'#' + section.id" aria-label="Link to this section">#</a>
+          {{ section.title }}
+        </h2>
+        <div class="prose" [innerHTML]="section.html"></div>
+      </section>
+    }
+
+    <nav class="neighbours" aria-label="Previous and next">
+      @if (links().previous; as previous) {
+        <a class="neighbours__link" [routerLink]="['/wiki', previous.page.slug]">
+          <span class="neighbours__dir">← Previous</span>
+          <span class="neighbours__title">{{ previous.page.title }}</span>
+        </a>
+      } @else {
+        <span></span>
+      }
+
+      @if (links().next; as next) {
+        <a class="neighbours__link neighbours__link--next" [routerLink]="['/wiki', next.page.slug]">
+          <span class="neighbours__dir">Next →</span>
+          <span class="neighbours__title">{{ next.page.title }}</span>
+        </a>
+      }
+    </nav>
+  </article>
+} @else {
+  <article class="page">
+    <h1>Not found</h1>
+    <p class="page__summary">
+      There is no page at this address. Try the <a routerLink="/">contents</a>.
+    </p>
+  </article>
+}
