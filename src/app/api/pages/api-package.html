@@ -1,0 +1,80 @@
+@let pkg = this.pkg();
+
+@if (pkg) {
+  <article class="page page--wide">
+    <header class="page__head">
+      <p class="page__part">
+        <a routerLink="/api">Code reference</a> · {{ layerLabel() }}
+      </p>
+      <h1>{{ pkg.module }}</h1>
+      <p class="page__summary">{{ pkg.summary }}</p>
+      <p class="pkg__pkgline"><code>{{ pkg.packageName }}</code></p>
+    </header>
+
+    @if (detail(); as detailHtml) {
+      <div class="prose" [innerHTML]="detailHtml"></div>
+    }
+
+    <nav class="contents" aria-label="Types in this package">
+      <p class="contents__label">{{ pkg.types.length }} types</p>
+      <ul>
+        @for (type of types(); track type.anchor) {
+          <li><a [href]="'#' + type.anchor">{{ type.name }}</a></li>
+        }
+      </ul>
+    </nav>
+
+    @for (type of types(); track type.anchor) {
+      <section class="type" [id]="type.anchor">
+        <h2 class="type__head">
+          <span class="type__kind">{{ type.kind }}</span>
+          <span class="type__name">{{ type.name }}</span>
+        </h2>
+
+        <p class="type__summary">{{ type.summary }}</p>
+
+        @if (type.detailHtml; as detailHtml) {
+          <div class="prose" [innerHTML]="detailHtml"></div>
+        }
+
+        @if (type.members?.length) {
+          <table class="members">
+            <tbody>
+              @for (member of type.members; track member.name) {
+                <tr>
+                  <th scope="row"><code>{{ member.name }}</code></th>
+                  <td>{{ member.summary }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </section>
+    }
+
+    <nav class="neighbours" aria-label="Previous and next package">
+      @if (links().previous; as previous) {
+        <a class="neighbours__link" [routerLink]="['/api', previous.id]">
+          <span class="neighbours__dir">← Previous</span>
+          <span class="neighbours__title">{{ previous.module }}</span>
+        </a>
+      } @else {
+        <span></span>
+      }
+
+      @if (links().next; as next) {
+        <a class="neighbours__link neighbours__link--next" [routerLink]="['/api', next.id]">
+          <span class="neighbours__dir">Next →</span>
+          <span class="neighbours__title">{{ next.module }}</span>
+        </a>
+      }
+    </nav>
+  </article>
+} @else {
+  <article class="page">
+    <h1>Not found</h1>
+    <p class="page__summary">
+      No package at this address. Try the <a routerLink="/api">code reference</a>.
+    </p>
+  </article>
+}

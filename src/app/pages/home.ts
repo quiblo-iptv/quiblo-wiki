@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { API, typeCount } from '../api/content';
 import { WIKI } from '../content';
 
 /** The contents page: every part, every page, with its one-line summary. */
@@ -38,10 +39,30 @@ import { WIKI } from '../content';
           </ul>
         </section>
       }
+
+      <section class="section">
+        <h2>Code reference</h2>
+        <p class="prose">
+          A package-by-package reference: {{ packageCount }} packages and {{ types }}
+          documented types, each with what it is for and what it must not be used for. Written
+          by hand rather than generated, because the useful half of a reference is the half a
+          generator cannot reach.
+        </p>
+        <ul class="index">
+          <li>
+            <a routerLink="/api">Packages and classes</a>
+            <span class="index__summary">
+              Start here to find a class, or read it straight through in dependency order.
+            </span>
+          </li>
+        </ul>
+      </section>
     </article>
   `,
   styleUrl: './wiki-page.scss',
 })
 export class HomeComponent {
   protected readonly parts = WIKI;
+  protected readonly packageCount = API.length;
+  protected readonly types = typeCount();
 }

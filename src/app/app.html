@@ -29,11 +29,14 @@
 
     @if (search.results().length > 0) {
       <ul class="results">
-        @for (hit of search.results(); track hit.page.slug + hit.sectionId) {
+        @for (hit of search.results(); track hit.path.join('/') + hit.anchor) {
           <li>
-            <button type="button" (click)="goToHit(hit.page.slug, hit.sectionId)">
+            <button type="button" (click)="goToHit(hit)">
               <span class="results__where">
-                {{ hit.page.title }} <span aria-hidden="true">&rsaquo;</span> {{ hit.sectionTitle }}
+                <span class="results__kind" [class.results__kind--api]="hit.kind === 'api'">
+                  {{ hit.kind === 'api' ? 'code' : 'wiki' }}
+                </span>
+                {{ hit.where }} <span aria-hidden="true">&rsaquo;</span> {{ hit.title }}
               </span>
               <span class="results__excerpt" [innerHTML]="hit.excerpt"></span>
             </button>
@@ -77,6 +80,27 @@
           }
         </ul>
       }
+
+      <p class="sidebar__part">Code reference</p>
+      <ul class="sidebar__list">
+        <li>
+          <a
+            routerLink="/api"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="closeNav()"
+          >All packages</a>
+        </li>
+        @for (pkg of packages; track pkg.id) {
+          <li>
+            <a
+              [routerLink]="['/api', pkg.id]"
+              routerLinkActive="is-active"
+              (click)="closeNav()"
+            ><code class="sidebar__mod">{{ pkg.module }}</code></a>
+          </li>
+        }
+      </ul>
     </nav>
   </aside>
 

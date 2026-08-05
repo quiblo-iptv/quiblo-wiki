@@ -1,7 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { API } from './api/content';
 import { WIKI } from './content';
-import { SearchService } from './core/search.service';
+import { SearchHit, SearchService } from './core/search.service';
 import { ThemeService } from './core/theme.service';
 
 @Component({
@@ -16,6 +17,7 @@ export class App {
   protected readonly theme = inject(ThemeService);
   protected readonly search = inject(SearchService);
   protected readonly parts = WIKI;
+  protected readonly packages = API;
 
   /** The sidebar is a drawer on narrow screens and always present on wide ones. */
   protected readonly navOpen = signal(false);
@@ -24,13 +26,13 @@ export class App {
     this.search.query.set(value);
   }
 
-  protected async goToHit(slug: string, sectionId: string): Promise<void> {
-    await this.router.navigate(['/wiki', slug]);
+  protected async goToHit(hit: SearchHit): Promise<void> {
+    await this.router.navigate(hit.path as string[]);
 
-    // After navigation, not during: the section does not exist in the DOM until the new
-    // page has rendered, and scrolling to it before then silently does nothing.
+    // After navigation, not during: the target does not exist in the DOM until the new page
+    // has rendered, and scrolling to it before then silently does nothing.
     requestAnimationFrame(() => {
-      document.getElementById(sectionId)?.scrollIntoView({ block: 'start' });
+      document.getElementById(hit.anchor)?.scrollIntoView({ block: 'start' });
     });
 
     this.search.query.set('');

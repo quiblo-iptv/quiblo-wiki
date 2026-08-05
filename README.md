@@ -34,6 +34,22 @@ That shape is doing real work:
 To add a page: add a `WikiPage` to the relevant part. Nothing else needs touching; the
 sidebar, the contents, the search index and the neighbour links all follow.
 
+## The code reference
+
+`src/app/api/` is a second, parallel body of content: 12 packages and 92 types, each with
+what it is for and what it must not be used for. It has **its own landing page at `/api`**
+as well as appearing in the wiki sidebar — someone hunting for a class opens it directly,
+someone reading the documentation meets it as the last section.
+
+Hand-written rather than generated from KDoc, deliberately. A generator produces an entry
+per symbol whether or not there is anything to say about it, and the useful half of a
+reference is the half it cannot reach: why a class exists, and which of its neighbours it is
+easy to confuse it with. The cost is that it can drift from the code; entries are kept short
+enough to be worth updating.
+
+Search covers both halves, and labels each result `wiki` or `code`, because typing a class
+name legitimately returns both the class and the prose that discusses it.
+
 ## Diagrams
 
 Inline SVG in `src/app/content/diagrams.ts`, drawn entirely in `currentColor`. One drawing

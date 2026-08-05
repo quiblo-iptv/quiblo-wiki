@@ -1,0 +1,149 @@
+/* The reference is denser than the prose pages and earns a wider measure: its lines are
+ * mostly short summaries beside a name, not paragraphs to be read end to end. */
+.page--wide {
+  max-width: 88ch;
+}
+
+.pkg__pkgline {
+  margin: 0.6rem 0 0;
+}
+
+/* --- package index ------------------------------------------------------ */
+
+.pkgs {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pkg {
+  display: grid;
+  grid-template-columns: minmax(0, 14rem) minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0.2rem 1rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.pkg__name {
+  font-weight: 600;
+  font-family: ui-monospace, 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.92rem;
+}
+
+.pkg__pkg {
+  grid-column: 1;
+  grid-row: 2;
+  font-size: 0.75rem;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--text-faint);
+}
+
+.pkg__summary {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.pkg__count {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  font-size: 0.78rem;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+/* --- one type ----------------------------------------------------------- */
+
+.type {
+  margin-bottom: 2.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+  scroll-margin-top: 5rem;
+}
+
+.type__head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin: 0 0 0.4rem;
+  font-size: 1.15rem;
+}
+
+.type__kind {
+  padding: 0.1rem 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 5px;
+  white-space: nowrap;
+}
+
+.type__name {
+  font-family: ui-monospace, 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 1.02rem;
+  overflow-wrap: anywhere;
+}
+
+.type__summary {
+  margin: 0 0 0.75rem;
+  color: var(--text-muted);
+}
+
+/* --- members ------------------------------------------------------------ */
+
+.members {
+  width: 100%;
+  margin: 0.9rem 0 0;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  display: block;
+  overflow-x: auto;
+}
+
+.members th {
+  width: 1%;
+  padding: 0.45rem 0.9rem 0.45rem 0;
+  text-align: left;
+  font-weight: 500;
+  vertical-align: top;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+
+.members td {
+  padding: 0.45rem 0;
+  color: var(--text-muted);
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+}
+
+@media (max-width: 620px) {
+  .pkg {
+    /* One column: three across is unreadable at this width, and the count is the least
+     * useful of the three so it goes last rather than competing for the top line. */
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.15rem;
+  }
+
+  .pkg__pkg,
+  .pkg__summary,
+  .pkg__count {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .members th {
+    /* A nowrap identifier column forces the table wider than the screen; here it wraps and
+     * the table stays inside its own scroll container. */
+    white-space: normal;
+    width: auto;
+  }
+}
