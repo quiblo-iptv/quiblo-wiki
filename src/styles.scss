@@ -131,3 +131,133 @@ mark {
   outline-offset: 2px;
   border-radius: 4px;
 }
+
+/* --- prose --------------------------------------------------------------
+ *
+ * Global, and it has to be.
+ *
+ * Wiki sections are rendered with `[innerHTML]`, and Angular's emulated view encapsulation
+ * works by stamping an attribute onto elements *the template creates*. Content inserted as
+ * innerHTML never gets that attribute, so component styles do not reach it — the rules
+ * below simply did not apply while they lived in the page component, and the first sign was
+ * a diagram wearing the browser's default 40px figure margin and a table wide enough to
+ * push the whole page sideways on a phone.
+ */
+
+.prose {
+  /* A long identifier or URL must wrap rather than widen the page. This is prose about
+   * code, so unbreakable tokens are the norm, not the exception. */
+  overflow-wrap: break-word;
+}
+
+.prose p {
+  margin: 0 0 1rem;
+}
+
+.prose h4 {
+  margin: 1.6rem 0 0.5rem;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.prose ul,
+.prose ol {
+  margin: 0 0 1rem;
+  padding-left: 1.3rem;
+}
+
+.prose li {
+  margin-bottom: 0.4rem;
+}
+
+.prose blockquote {
+  margin: 1.25rem 0;
+  padding: 0.85rem 1.1rem;
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 10px 10px 0;
+}
+
+.prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.prose table {
+  width: 100%;
+  margin: 0 0 1.25rem;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+  /* A wide table scrolls inside itself rather than widening the page. `display: block` is
+   * what makes overflow apply at all — a table box ignores it. */
+  display: block;
+  overflow-x: auto;
+}
+
+.prose th,
+.prose td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.prose th {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+.prose dl {
+  margin: 0;
+}
+
+.prose dt {
+  margin-top: 1.1rem;
+  font-weight: 600;
+}
+
+.prose dd {
+  margin: 0.2rem 0 0;
+  color: var(--text-muted);
+}
+
+/* --- diagrams ----------------------------------------------------------- */
+
+.prose .diagram {
+  /* The zero inline margin matters: a figure carries 40px of it by default. */
+  margin: 1.75rem 0;
+  padding: 1.25rem;
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow-x: auto;
+}
+
+.prose .diagram svg {
+  display: block;
+  width: 100%;
+  /* Below this the labels collide. The figure scrolls instead of the page. */
+  min-width: 520px;
+  height: auto;
+  /* Every stroke and label is currentColor, so one drawing serves both themes. */
+  color: var(--text);
+}
+
+.prose .diagram figcaption {
+  margin-top: 0.9rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+@media (max-width: 620px) {
+  .prose .diagram {
+    padding: 0.9rem;
+  }
+
+  .prose table {
+    font-size: 0.86rem;
+  }
+}

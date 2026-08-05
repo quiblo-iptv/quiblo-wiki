@@ -1,5 +1,9 @@
 :host {
   display: block;
+
+  /* The sidebar and the scrim are pinned beneath the bar, so its height has to be a value
+   * both can read. It changes on narrow screens, where the search moves to its own row. */
+  --topbar-h: 55px;
 }
 
 /* --- top bar ------------------------------------------------------------ */
@@ -76,6 +80,11 @@
   flex: 1 1 auto;
   max-width: 520px;
   margin-left: auto;
+
+  /* Without this the box refuses to shrink below its own content, because a flex item
+   * defaults to `min-width: auto`. On a phone that pushed the bar wider than the viewport
+   * and took the whole page with it — the text was cut off at the right edge. */
+  min-width: 0;
 }
 
 .searchbox__input {
@@ -150,14 +159,16 @@
 
 .layout {
   display: grid;
+  /* minmax(0, 1fr) rather than 1fr: a grid track is auto-sized by default and would let a
+   * wide table or diagram push the whole page sideways instead of scrolling inside itself. */
   grid-template-columns: 268px minmax(0, 1fr);
   align-items: start;
 }
 
 .sidebar {
   position: sticky;
-  top: 55px;
-  max-height: calc(100vh - 55px);
+  top: var(--topbar-h);
+  max-height: calc(100vh - var(--topbar-h));
   padding: 1.5rem 1rem 3rem;
   overflow-y: auto;
   border-right: 1px solid var(--border);
@@ -227,21 +238,18 @@
     display: grid;
   }
 
-  .topbar__brand span:not(.topbar__mark) {
-    display: none;
-  }
-
   .layout {
     grid-template-columns: minmax(0, 1fr);
   }
 
   .sidebar {
     position: fixed;
-    top: 55px;
+    top: var(--topbar-h);
     bottom: 0;
     left: 0;
     z-index: 25;
-    width: 280px;
+    /* Never wider than the screen: 280px is wider than some phones in portrait. */
+    width: min(280px, 82vw);
     max-height: none;
     background: var(--bg-raised);
     transform: translateX(-100%);
@@ -255,7 +263,7 @@
   .scrim {
     display: block;
     position: fixed;
-    inset: 55px 0 0;
+    inset: var(--topbar-h) 0 0;
     z-index: 20;
     background: rgba(0, 0, 0, 0.5);
     border: 0;
@@ -264,5 +272,51 @@
 
   .main {
     padding: 1.75rem 1.25rem 3rem;
+  }
+}
+
+/* --- phones ------------------------------------------------------------- */
+
+@media (max-width: 620px) {
+  /* Search gets its own row rather than fighting the brand and the buttons for space. A
+   * field squeezed into a shared row is too small to read what you typed, and shrinking it
+   * far enough to fit is what broke the layout in the first place. */
+  :host {
+    --topbar-h: 104px;
+  }
+
+  .topbar {
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    padding: 0.55rem 0.9rem;
+  }
+
+  .topbar__brand {
+    /* Takes the space between the burger and the theme button, so the two stay at the
+     * edges where a thumb expects them. */
+    flex: 1 1 auto;
+    min-width: 0;
+    justify-content: flex-start;
+  }
+
+  .searchbox {
+    order: 3;
+    flex: 1 0 100%;
+    max-width: none;
+    margin-left: 0;
+  }
+
+  .searchbox__input {
+    /* 16px: anything smaller makes iOS Safari zoom the page on focus, which then leaves
+     * the reader scrolled sideways with no obvious way back. */
+    font-size: 16px;
+  }
+
+  .results {
+    max-height: 55vh;
+  }
+
+  .main {
+    padding: 1.5rem 1rem 2.5rem;
   }
 }

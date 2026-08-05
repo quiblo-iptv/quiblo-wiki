@@ -88,106 +88,6 @@
   opacity: 1;
 }
 
-/* --- prose -------------------------------------------------------------- */
-
-.prose p {
-  margin: 0 0 1rem;
-}
-
-.prose h4 {
-  margin: 1.6rem 0 0.5rem;
-  font-size: 1rem;
-  color: var(--text);
-}
-
-.prose ul,
-.prose ol {
-  margin: 0 0 1rem;
-  padding-left: 1.3rem;
-}
-
-.prose li {
-  margin-bottom: 0.4rem;
-}
-
-.prose blockquote {
-  margin: 1.25rem 0;
-  padding: 0.85rem 1.1rem;
-  background: var(--accent-soft);
-  border-left: 3px solid var(--accent);
-  border-radius: 0 10px 10px 0;
-}
-
-.prose blockquote p:last-child {
-  margin-bottom: 0;
-}
-
-.prose table {
-  width: 100%;
-  margin: 0 0 1.25rem;
-  border-collapse: collapse;
-  font-size: 0.92rem;
-  /* Wide tables scroll inside themselves rather than pushing the page sideways. */
-  display: block;
-  overflow-x: auto;
-}
-
-.prose th,
-.prose td {
-  padding: 0.5rem 0.75rem;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
-  vertical-align: top;
-}
-
-.prose th {
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-}
-
-.prose dl {
-  margin: 0;
-}
-
-.prose dt {
-  margin-top: 1.1rem;
-  font-weight: 600;
-}
-
-.prose dd {
-  margin: 0.2rem 0 0;
-  color: var(--text-muted);
-}
-
-/* --- diagrams ----------------------------------------------------------- */
-
-.prose .diagram {
-  margin: 1.75rem 0;
-  padding: 1.25rem;
-  background: var(--bg-sunken);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow-x: auto;
-}
-
-.prose .diagram svg {
-  display: block;
-  width: 100%;
-  min-width: 520px;
-  height: auto;
-  /* Every stroke and label is currentColor, so one drawing serves both themes. */
-  color: var(--text);
-}
-
-.prose .diagram figcaption {
-  margin-top: 0.9rem;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
-
 /* --- index (home) ------------------------------------------------------- */
 
 .index {
@@ -251,4 +151,38 @@
   display: block;
   font-weight: 600;
   color: var(--accent);
+}
+
+/* --- phones ------------------------------------------------------------- */
+
+@media (max-width: 620px) {
+  .contents ul {
+    /* One per line. Wrapped inline links at this width produce a ragged block that is
+     * harder to scan than a plain list. */
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .section {
+    margin-bottom: 2.25rem;
+    scroll-margin-top: 7rem;
+  }
+
+  .section__anchor {
+    /* No hover on a touch screen, so the anchor can never be revealed — and at this width
+     * it would sit outside the text column anyway. */
+    display: none;
+  }
+
+  .neighbours {
+    flex-direction: column;
+  }
+
+  .neighbours__link {
+    max-width: none;
+  }
+
+  .neighbours__link--next {
+    margin-left: 0;
+  }
 }
