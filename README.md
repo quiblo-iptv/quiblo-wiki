@@ -70,7 +70,7 @@ read.
   are read out of the content files rather than kept in a second list, so a page cannot exist
   and be missing from the sitemap.
 
-Run it with the public origin after building: `node tools/seo.mjs https://example.github.io/quiblo-wiki`.
+Run it with the public origin after building: `node tools/seo.mjs https://quiblo-iptv.github.io/quiblo-wiki`.
 
 ## Deployment
 

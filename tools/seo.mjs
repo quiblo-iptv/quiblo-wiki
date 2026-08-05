@@ -9,7 +9,7 @@
  *
  * Run after the build, with the public origin as the first argument:
  *
- *   node tools/seo.mjs https://user.github.io/quiblo-wiki
+ *   node tools/seo.mjs https://quiblo-iptv.github.io/quiblo-wiki
  */
 
 import { writeFileSync, existsSync, readFileSync } from 'node:fs';
