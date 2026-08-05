@@ -19,7 +19,7 @@ television frontend, a desktop frontend or a test can all use it unchanged.</p>`
         kind: 'data class',
         summary: 'One playable item — a live channel, a film, or a series container.',
         detail: `
-<p>The most-used type in the project, and the one whose <em>kind</em> matters most. A
+<p>The most-used type in our codebase, and the one whose <em>kind</em> matters most. A
 <code>SERIES</code> channel is a container: its <code>streamUrl</code> is not an episode and
 must never be handed to the player. Episodes come from the panel per series and are never
 rows in the channel table.</p>`,

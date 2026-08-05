@@ -22,6 +22,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - id: pages
+        uses: actions/configure-pages@v5
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -40,6 +43,9 @@ jobs:
       # GitHub Pages has no routing fallback, so a deep link would 404 on refresh. Serving
       # index.html as the 404 page hands the URL back to the Angular router.
       - run: cp dist/quiblo-wiki/browser/index.html dist/quiblo-wiki/browser/404.html
+
+      # Sitemap and robots, with the real public origin so the URLs in them resolve.
+      - run: node tools/seo.mjs "${{ steps.pages.outputs.base_url }}"
 
       # Stops Jekyll eating files and directories beginning with an underscore.
       - run: touch dist/quiblo-wiki/browser/.nojekyll

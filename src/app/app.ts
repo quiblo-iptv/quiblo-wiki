@@ -3,6 +3,7 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { API } from './api/content';
 import { WIKI } from './content';
 import { SearchHit, SearchService } from './core/search.service';
+import { SeoService } from './core/seo.service';
 import { ThemeService } from './core/theme.service';
 
 @Component({
@@ -13,6 +14,12 @@ import { ThemeService } from './core/theme.service';
 })
 export class App {
   private readonly router = inject(Router);
+
+  constructor() {
+    // Titles, descriptions and canonical links per route. One HTML file serves every page,
+    // so without this the whole site shares a single title and description.
+    inject(SeoService).start();
+  }
 
   protected readonly theme = inject(ThemeService);
   protected readonly search = inject(SearchService);

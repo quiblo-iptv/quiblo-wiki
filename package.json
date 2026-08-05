@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve": "ng build --configuration production && node tools/serve.mjs"
+    "serve": "ng build --configuration production && node tools/seo.mjs && node tools/serve.mjs",
+    "seo": "node tools/seo.mjs"
   },
   "private": true,
   "packageManager": "npm@11.16.0",

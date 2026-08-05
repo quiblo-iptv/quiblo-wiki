@@ -99,7 +99,7 @@ blocked panel — the case that used to be swallowed as "this account has no fil
     module: ':source:m3u',
     packageName: 'dev.quiblo.source.m3u',
     layer: 'source',
-    summary: 'The M3U/M3U8 parser. Pure JVM, and the best-tested code in the project.',
+    summary: 'The M3U/M3U8 parser. Pure JVM, and the best-tested code we have.',
     detail: `
 <p>Plain text, and messier in practice than the format suggests. Tested against byte-order
 marks, CRLF endings, unescaped commas inside display names, missing <code>group-title</code>

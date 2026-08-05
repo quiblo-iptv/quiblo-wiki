@@ -4,7 +4,7 @@ export const ENGINEERING: WikiPart = {
   id: 'engineering',
   title: 'Engineering practice',
   blurb:
-    'How the project is built, tested, measured, accepted and released — and the conventions a contributor is expected to follow.',
+    'How we build, test, measure, accept and release — and the conventions we hold a change to.',
   pages: [
     {
       slug: 'build-and-tooling',
@@ -76,10 +76,10 @@ subtly.</p>`,
           title: 'The shape of the suite',
           html: `
 <p>JUnit 5 with MockK, and Turbine for flows. DAOs are mocked rather than exercised against a
-real SQLite — there is no Robolectric in the project, and adding it to assert one query plan
-would be more infrastructure than the question is worth.</p>
-<p>Coverage thresholds apply where they mean something. The two parsers carry the highest
-coverage in the project — <code>:source:m3u</code> around 98%, <code>:source:xtream</code>
+real SQLite — we have no Robolectric, and adding it to assert one query plan would be
+more infrastructure than the question is worth.</p>
+<p>Coverage thresholds apply where they mean something. The two parsers carry our highest
+coverage — <code>:source:m3u</code> around 98%, <code>:source:xtream</code>
 around 84% — because they are pure JVM, deterministic, and face hostile input. UI modules are
 not chased for coverage, because a covered composable proves very little.</p>`,
         },
@@ -131,7 +131,7 @@ the mocked flows never emitted, so the chain never ran at all.</p>`,
           id: 'targets',
           title: 'The hardware that matters',
           html: `
-<p>The weakest device the project runs on sets the bar: a Google TV box on Android 14 with
+<p>The weakest device we run on sets the bar: a Google TV box on Android 14 with
 <strong>1.84&nbsp;GB of RAM and a 32-bit ARM ABI</strong>, rendering at 1080p.</p>
 <blockquote><p><strong>No phone performance figure transfers to it.</strong> Nor does an
 emulator's: a television emulator is x86_64 with desktop memory. It is good for proving a
@@ -184,7 +184,7 @@ report the median — never the first run after an install.</p>
 <p>Jank: reset <code>gfxinfo</code>, scroll deliberately, read the percentiles back. On a
 television, "scroll" means holding the D-pad, which moves faster than any finger.</p>
 <p>Requests to a provider: count them <strong>at the source</strong>, not by eye. The whole
-class of bug that got this project's account blocked is invisible from the UI.</p>`,
+class of bug that got our account blocked is invisible from the UI.</p>`,
         },
       ],
     },
@@ -207,7 +207,7 @@ so it either passes or does not.</p>
   <li><em>"Settings work on the television"</em> — unfalsifiable.</li>
   <li><em>"Every setting the phone offers is reachable and changeable on the television, and
     changing one changes what the app does — not merely what the screen says"</em> — a
-    criterion that <a href="/wiki/history#audit">the hollow settings screen</a> would have
+    criterion that <a href="/wiki/what-we-learned#audit">the hollow settings screen</a> would have
     failed.</li>
 </ul>`,
         },
@@ -310,8 +310,8 @@ release to upgrade from. It becomes live at v1.0.1.</p>`,
   <li><strong>Commit after each self-contained step</strong>, not once at the end of a body of
     work. A commit that does one thing can be read, reverted and bisected; one that does six
     cannot.</li>
-  <li>Read <code>docs/FREEZE.md</code> first. A change outside its scope needs a dated
-    amendment, not an argument in a pull request.</li>
+  <li>Read <a href="/wiki/scope-and-principles">Scope and principles</a> first. A change
+    outside it is a conversation to have before the code, not in a pull request.</li>
 </ul>`,
         },
         {
@@ -335,7 +335,7 @@ problems should say which one it left and why.</p>`,
 <ol>
   <li><strong>Can you reach it from a running app, and does changing it change what you
     see?</strong> If not, it is not a feature. See
-    <a href="/wiki/history#audit">the audit</a>.</li>
+    <a href="/wiki/what-we-learned#audit">the audit</a>.</li>
   <li><strong>What does it cost the user's provider?</strong> Any new per-item network call
     must answer what renders the result and what happens when a list is flung or a D-pad is
     held.</li>
@@ -348,8 +348,9 @@ problems should say which one it left and why.</p>`,
           id: 'ai',
           title: 'A note on AI-assisted work',
           html: `
-<p>Much of this codebase was written with AI assistance, and the practices above are partly
-shaped by where that goes wrong. Two are worth stating outright.</p>
+<p>Quiblo is built by a small team — Mahmoud and Claude — working together on the same
+codebase. Several of the practices above are shaped by where that pairing goes wrong, and two
+are worth stating outright.</p>
 <p><strong>A plausible diagnosis is not a diagnosis.</strong> During the bug-fix pass a
 scroll-wobble fix was written against a confident, wrong explanation — that a list row grows
 when its guide arrives. The arithmetic disproved it: a fixed-size logo dominates the row, so
@@ -393,8 +394,8 @@ does this" and "I watched it do this" is where the interesting bugs live.</p>`,
   <dd>Chunked streaming with an <code>.m3u8</code> manifest. Supports adaptive bitrate.</dd>
 
   <dt>DASH</dt>
-  <dd>An alternative adaptive streaming format. Supported since Amendment 2; a DASH stream
-    carrying DRM still fails at the licence step.</dd>
+  <dd>An alternative adaptive streaming format. Supported; a DASH stream carrying DRM still
+    fails at the licence step, which is correct rather than a bug.</dd>
 
   <dt>Raw TS</dt>
   <dd>An unchunked, endless MPEG transport stream over HTTP. No adaptive bitrate, no

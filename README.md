@@ -56,6 +56,22 @@ Inline SVG in `src/app/content/diagrams.ts`, drawn entirely in `currentColor`. O
 therefore serves both themes rather than two exports that drift apart, the labels are real
 text so they are searchable, and there is no second asset to keep in sync.
 
+## SEO
+
+A single-page app serves one HTML file for every route, so without help the whole site shares
+one title and one description — which is the first thing a search engine and a link preview
+read.
+
+- `SeoService` sets the title, description, Open Graph and Twitter tags, and a **canonical
+  link** per route. The canonical matters more than usual here: the deployment serves
+  `index.html` for unknown paths, so a typo'd URL renders the site rather than 404ing, and
+  without a canonical every typo is an indexable duplicate.
+- `npm run seo -- <origin>` writes `sitemap.xml` and `robots.txt` into the build. The routes
+  are read out of the content files rather than kept in a second list, so a page cannot exist
+  and be missing from the sitemap.
+
+Run it with the public origin after building: `node tools/seo.mjs https://example.github.io/quiblo-wiki`.
+
 ## Deployment
 
 Pushing to `main` builds and publishes to GitHub Pages. Two details in the workflow are

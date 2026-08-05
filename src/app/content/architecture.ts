@@ -60,7 +60,7 @@ phone's despite depending on every feature module.</p>`,
 <blockquote><p><strong>Do not fork them.</strong> The moment there are two
 <code>BrowseViewModel</code>s, a fix to the guide-request guards has to be made twice — and
 the second one will be forgotten, which is how
-<a href="/wiki/history#blocks">the provider block</a> comes back.</p></blockquote>
+<a href="/wiki/what-we-learned#blocks">the provider block</a> comes back.</p></blockquote>
 <p>The same reasoning applies below the ViewModels. When the television needed a text field
 that survives the on-screen keyboard, the fix went into a shared component rather than being
 copied into the two screens that need typing: a copy each is how a fix lands in one and is
@@ -384,7 +384,7 @@ an acceptance criterion, not a style preference.</p>`,
           id: 'limits',
           title: 'The four guards',
           html: `
-<p>Everything here exists because of <a href="/wiki/history#blocks">two account blocks</a>.
+<p>Everything here exists because of <a href="/wiki/what-we-learned#blocks">two account blocks</a>.
 They are easy to remove by accident and each covers a different failure.</p>
 <ol>
   <li><strong>Prefetch fires on settling</strong> — scroll settling on the phone, focus

@@ -66,7 +66,7 @@ any log.</p>`,
           title: 'What costs a request to your provider',
           html: `
 <p>Worth understanding, because getting an account throttled is the failure mode this project
-has met most often. See <a href="/wiki/history#blocks">the provider blocks</a>.</p>
+has met most often. See <a href="/wiki/what-we-learned#blocks">the provider blocks</a>.</p>
 <table>
   <thead><tr><th>Action</th><th>Requests</th></tr></thead>
   <tbody>
@@ -224,7 +224,7 @@ it.</p>`,
 theme is always dark by design — a television is watched at a distance in a dim room — and a
 television has no wallpaper for a dynamic palette to be drawn from. Both controls would
 change nothing on screen, and after
-<a href="/wiki/history#audit">the feature audit</a> this project treats a control that does
+<a href="/wiki/what-we-learned#audit">the feature audit</a> we treat a control that does
 nothing as worse than an absent one.</p>
 <p>Text entry — the metadata key, and renaming a category — works with the on-screen keyboard
 up, which is harder than it sounds. See below.</p>`,
@@ -349,6 +349,74 @@ storage permission is involved. Import reads one back.</p>
 </ul>
 <p>Importing your own export is idempotent: "Nothing to restore — everything in that file is
 already set up."</p>`,
+        },
+      ],
+    },
+    {
+      slug: 'troubleshooting',
+      title: 'When something looks wrong',
+      summary:
+        'The failures we see most, and how to tell an app bug from a provider one.',
+      sections: [
+        {
+          id: 'first',
+          title: 'Check this first',
+          html: `
+<p>Most reports we get are one of five things, and four of them are not bugs in the app.</p>
+<table>
+  <thead><tr><th>What you see</th><th>Usually</th></tr></thead>
+  <tbody>
+    <tr><td>Movies and Series tabs are empty</td><td>The source is an M3U. An M3U cannot say what kind of thing an entry is, so everything parses as Live. Films and series need Xtream.</td></tr>
+    <tr><td>No programme information anywhere</td><td>Also an M3U — the format carries no schedule at all.</td></tr>
+    <tr><td>"Cannot refresh", and details fail too</td><td>The provider is refusing the account. See below.</td></tr>
+    <tr><td>A stream buffers or will not start</td><td>The provider, the connection, or a format we do not support. Try another channel first — if every channel fails, it is not the stream.</td></tr>
+    <tr><td>Artwork missing on live channels</td><td>The playlist supplied none. Optional logo lookup fills these in, and is off by default.</td></tr>
+  </tbody>
+</table>`,
+        },
+        {
+          id: 'blocked',
+          title: 'When a provider stops answering',
+          html: `
+<p>Panels run anti-flood firewalls, and when one decides an account is asking too often it
+stops answering the API entirely — while streams keep playing. That combination is the
+signature: <strong>you can watch what you already loaded, but nothing will refresh</strong>.</p>
+<p>We hold the app to a strict request budget so it cannot cause this — see
+<a href="/wiki/getting-started#what-costs">what costs a request</a> — and when a panel refuses,
+the app stops asking for fifteen minutes rather than hammering it. That backoff survives a
+restart on purpose: force-stopping the app does not clear it, because doing so is exactly what
+turns a short block into a long one.</p>
+<p>If you hit one, the honest answer is to wait it out or speak to the provider. There is
+nothing to fix in the app while it is active, and "failed to load details" is expected rather
+than a second bug.</p>`,
+        },
+        {
+          id: 'evidence',
+          title: 'Telling an app bug from a provider one',
+          html: `
+<p>Two checks separate them quickly.</p>
+<ul>
+  <li><strong>Does it fail outside the app?</strong> If the same account fails from a plain
+    HTTP request on the same network, the app is not involved.</li>
+  <li><strong>Does it fail for every item, or one?</strong> A single stream that will not play
+    is usually that stream. Everything failing at once is the account, the connection, or
+    us.</li>
+</ul>
+<p>If you are reporting something to us, the most useful things you can include are: which
+build (phone or television), what kind of source, whether it is one item or all of them, and
+whether anything changed just before it started. Please never paste a URL that contains your
+username and password — we do not want them, and the app never logs them.</p>`,
+        },
+        {
+          id: 'reset',
+          title: 'Starting clean without losing your setup',
+          html: `
+<p>Export your configuration first — Settings, then Backup. The file records your sources and
+favourites, and deliberately <strong>not</strong> your passwords, so you re-enter those after
+importing.</p>
+<p>Then remove and re-add the source, or reinstall. Importing the file restores what it holds,
+and importing your own export twice is harmless: the app tells you there was nothing left to
+restore rather than duplicating anything.</p>`,
         },
       ],
     },
