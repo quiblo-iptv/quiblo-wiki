@@ -33,8 +33,12 @@ not a packaging error.</p>
           id: 'first-source',
           title: 'Adding your first source',
           html: `
-<p>Quiblo ships with nothing. On first launch it has no content, and the correct next step is
-to add a source under <strong>Sources</strong>.</p>
+<p>Quiblo ships with nothing. First launch asks who is watching — see
+<a href="/wiki/profiles">Who is watching</a>, and answer it with a name, or with Guest — and
+then has no content, so the next step is to add a source.</p>
+<p>On the phone that is the <strong>Sources</strong> destination. On the television it is
+<strong>Settings</strong>, then <strong>Sources</strong>: adding a playlist is something a
+viewer does once, and a remote should not spend a top-level position on it.</p>
 <p>One form covers both kinds, and which one you mean is inferred from what you leave
 empty:</p>
 <table>
@@ -79,8 +83,92 @@ has met most often. See <a href="/wiki/what-we-learned#blocks">the provider bloc
   </tbody>
 </table>
 <p><strong>Nothing refreshes automatically.</strong> Not on launch, not on tab switch, not on
-scroll. Every one of the above also passes a token bucket, so no amount of scrolling can
-exceed roughly two and a half requests a second however many rows go by.</p>`,
+scroll. Every one of the above also passes a token bucket: a burst of eight is allowed
+through untouched, so a refresh you asked for is never slowed down, and after that requests
+are spaced one every 400&nbsp;ms — two and a half a second — however many rows go by.</p>
+<p>One thing on this page costs nothing to your provider at all: <strong>describing the
+catalogue</strong> talks to The Movie Database with your own key, and never to the panel.
+It has <a href="/wiki/settings-reference#scan">its own budget</a>.</p>`,
+        },
+      ],
+    },
+
+    {
+      slug: 'profiles',
+      title: 'Who is watching',
+      summary:
+        'Local profiles: separate favourites and resume points, a guest that leaves nothing behind, and no PIN.',
+      sections: [
+        {
+          id: 'what-they-are',
+          title: 'What a profile owns',
+          html: `
+<p>A household shares a television, and a resume point is personal. A profile carries
+<strong>favourites and resume positions</strong>, and nothing else.</p>
+<p>Everything else stays app-wide, deliberately:</p>
+<table>
+  <thead><tr><th>Per profile</th><th>Shared by everyone</th></tr></thead>
+  <tbody>
+    <tr><td>Favourites</td><td>Sources and passwords</td></tr>
+    <tr><td>Resume points, including per episode</td><td>Player settings — skip, buffering, quality</td></tr>
+    <tr><td>Continue watching</td><td>Hidden and renamed categories</td></tr>
+    <tr><td></td><td>The metadata key, and what it has cached</td></tr>
+  </tbody>
+</table>
+<p>The dividing line is whether a setting describes the person on the sofa or the television
+and the account behind it. A playlist is the household's, and a home that had to type its
+Xtream credentials in once per person would rightly call that a bug.</p>`,
+        },
+        {
+          id: 'choosing',
+          title: 'Choosing, and switching',
+          html: `
+<p>The chooser stands in front of the app on both the phone and the television: until somebody
+has said who they are, nothing is drawn that would have to read a favourite or a resume point
+to draw itself. It offers the profiles that exist, a field to add another, and Guest.</p>
+<p>Your choice is remembered between launches, so the chooser is not a screen you meet every
+day — only on a first launch, after switching, and after a guest session ends.
+<strong>Switch profile</strong> lives under Settings on both apps and brings the chooser
+back.</p>
+<p>Two things are honestly missing today: <strong>a profile cannot be renamed or removed</strong>
+once it exists, other than by clearing the app's data. The storage and the plumbing for
+removal are there; the screen for it is not, and we would rather say so than let you go
+looking for a button.</p>`,
+        },
+        {
+          id: 'guest',
+          title: 'Guest',
+          html: `
+<p><strong>Guest is the profile that leaves nothing behind.</strong> It favourites and resumes
+like any other while it is running, and when the guest leaves, all of it is deleted.</p>
+<p>It is also deleted at every startup, which is not belt and braces — it is the only version
+that works. A television is switched off at the wall, and a process the system kills never
+gets to tidy up after itself. Clearing at startup is a promise the app can keep whatever
+happened to the last session.</p>
+<p>There is at most one guest at a time, because a second would be a second set of throwaway
+favourites that nobody could tell apart in the chooser.</p>`,
+        },
+        {
+          id: 'no-pin',
+          title: 'No PIN, and what that means',
+          html: `
+<p>There is no password and no PIN on a profile. This answers <em>whose favourites are
+these</em>, not <em>who is allowed to watch what</em> — anybody holding the remote can switch
+to any profile.</p>
+<p>Parental control is a different feature with different requirements, and offering a
+chooser that looks like a lock without being one would be worse than offering neither. If you
+need to restrict what a child can reach, Quiblo does not do that today.</p>`,
+        },
+        {
+          id: 'upgrading',
+          title: 'Upgrading from a version without profiles',
+          html: `
+<p>Nothing is lost. Everything already on the device — every favourite, every resume point — is
+moved onto a single profile named <strong>Default</strong>, and the first launch after
+upgrading shows the chooser with that profile in it. Pick it and everything is where you left
+it.</p>
+<p>A household of one can pick Default every few weeks and otherwise forget the feature
+exists.</p>`,
         },
       ],
     },
@@ -102,7 +190,23 @@ Live is a list — a channel's artwork is a small wide logo, and a grid of those
 unreadable.</p>
 <p>Each browse screen offers a category filter, a search field and a list/grid toggle.
 Filtering and searching happen in SQL rather than in memory, which is what keeps search
-responsive across a twenty-thousand-entry playlist.</p>`,
+responsive across a twenty-thousand-entry playlist.</p>
+<p>Those search fields each answer for one kind: searching under Movies searches films. The
+<a href="/wiki/television#search">single search across all three kinds</a> is on the
+television today, and the phone is the side of that pair still to be brought over.</p>
+<p>Which favourites and which resume points you see depends on
+<a href="/wiki/profiles">who is watching</a>. Everything else here is shared.</p>`,
+        },
+        {
+          id: 'accessibility',
+          title: 'What a screen reader hears',
+          html: `
+<p>Playback is the part of the app where a silent screen is genuinely ambiguous — a stream
+that is buffering and a stream that has died look identical, and to TalkBack they used to
+sound identical too, which is to say like nothing at all.</p>
+<p>Both are announced now, as live regions: buffering when the player stalls, and the failure
+text when it gives up. On the television the same announcements go out, because a set-top box
+has TalkBack too and a remote gives even less to feel around with.</p>`,
         },
         {
           id: 'favourites',
@@ -157,9 +261,16 @@ present and inert.</p>
           id: 'shape',
           title: 'The shape of it',
           html: `
-<p>A text tab bar across the top — Live, Movies, Series, Favourites, Sources, and a settings
-gear at the far right — with content beneath it. The reference is the Google TV home screen:
-plain labels with a thin underline marking the selected one, no filled pills, no cards.</p>
+<p>A tab bar across the top — a search magnifier, then Live, Movies, Series, Favourites, and a
+settings gear at the far right — with content beneath it. The reference is the Google TV home
+screen: plain labels with a thin underline marking the selected one, no filled pills, no
+cards.</p>
+<p>Two of those positions are chosen rather than inherited. <strong>Search is first, and the
+only one drawn as an icon</strong>: a magnifier says "search" in every language and needs no
+word beside it, the leftmost position is where a remote already rests when the app opens, and
+it is where Back comes to rest — Back from any catalogue lands on Search, and Back again
+leaves the app. <strong>Sources is not on the bar at all</strong>; it is in Settings, because
+adding a playlist is a thing done once and the bar is for things done daily.</p>
 <p>Movies and Series are one horizontally scrolling row per category, stacked vertically.
 That replaces the phone's category <em>filter</em> outright: on a phone you pick a category
 and get a grid, on a television every category is on screen and the remote walks through
@@ -197,9 +308,11 @@ testable function rather than buried in a modifier.</p>
     <tr><td>Left / Right</td><td>Move along the tabs; past the last one lies the gear</td></tr>
     <tr><td>Down</td><td>Leave the bar for the content</td></tr>
     <tr><td>Centre / Enter</td><td>Enter the content, or open settings when on the gear</td></tr>
-    <tr><td>Back</td><td>Retreat one step; from the bar, exit</td></tr>
+    <tr><td>Back</td><td>Retreat one step; from a catalogue, back to Search; from Search, exit</td></tr>
   </tbody>
 </table>
+<p>Back resting on Search rather than on Live is deliberate: a viewer pressing Back repeatedly
+is trying to leave, and each press should visibly get closer to it rather than cycling.</p>
 <h4>In the player</h4>
 <table>
   <thead><tr><th>Key</th><th>Live</th><th>Film or episode</th></tr></thead>
@@ -216,10 +329,41 @@ through to the system instead of being absorbed by a player that has nothing to 
 it.</p>`,
         },
         {
+          id: 'search',
+          title: 'Search',
+          html: `
+<p><strong>One search across live channels, films and series at once</strong>, rather than a
+box on each of the three. A viewer looking for a title does not know which shelf their
+provider filed it on — panels routinely list the same film as a film <em>and</em> as a
+one-episode series — and a search that answers for one kind is a search that appears to have
+found nothing.</p>
+<p>Results come back grouped by kind, as rows, using the same poster rows the catalogue tabs
+use. Nothing is asked of your provider: search runs against what is already on the device.</p>
+<h4>Its two shapes</h4>
+<p>At rest the screen is the name and a field in the middle of the panel and nothing else,
+because typing something is the only thing to do there. Asking a question moves the field to
+the top and gives the rest of the panel to the answer.</p>
+<h4>Advanced</h4>
+<p>Behind <strong>Advanced</strong> is a genre filter — a second question about the catalogue
+rather than part of the first, so it stays out of the way until asked for. It is built from
+whatever film and series information has already been cached, so it costs nothing and lists
+only genres your own catalogue actually contains: offering "Western" to a library holding
+none is a control that can only disappoint.</p>
+<p>Alongside it sits a <strong>coverage figure</strong> — how much of your catalogue has been
+described so far. It is on screen rather than hidden because a genre filter running against a
+tenth of a library is telling less than the whole truth, and silently omitting nine films in
+ten is worse than saying so. <a href="/wiki/settings-reference#scan">Describing the
+catalogue</a> is what raises it.</p>`,
+        },
+        {
           id: 'settings',
           title: 'Settings on a television',
           html: `
-<p>Every setting the phone has, except two.</p>
+<p>Every setting the phone has, except two — plus two things the phone reaches elsewhere.</p>
+<p><strong>Sources lives here</strong>, rather than on the tab bar, and so does
+<strong>Switch profile</strong>. Both are things a viewer does rarely, and the bar is
+expensive: every position on it is one more press between somebody and what they came to
+watch.</p>
 <p><strong>Theme mode and dynamic colour are deliberately absent.</strong> The television
 theme is always dark by design — a television is watched at a distance in a dim room — and a
 television has no wallpaper for a dynamic palette to be drawn from. Both controls would
@@ -314,12 +458,62 @@ poster tiles gain a score and detail screens gain a plot, genres, a certificate,
 director or creator, and a cast list. It can also fill in artwork where your provider gave
 none.</p>
 <p>Your key is yours, and the service rate-limits per key, so the app is careful with it:
-answers — <em>including "no match"</em> — are cached in the database across launches, and
-requests are made per tile that has actually been on screen rather than per category
-opened.</p>
+answers — <em>including "no match"</em> — are cached in the database across launches, requests
+are made per tile that has actually been on screen rather than per category opened, and they
+pass a token bucket that holds the sustained rate to eight a second.</p>
+<p>A <em>failure</em> is never cached. "Nothing matches this title" is an answer worth
+remembering; "I could not ask" is not one, and writing it down as though it were is how a
+catalogue ends up permanently described as empty.</p>
+<p>If you would rather not wait for the cache to fill a tile at a time, you can
+<a href="/wiki/settings-reference#scan">describe the whole catalogue</a> in one go.</p>
 <p>Provider artwork always wins. The service only fills a gap, because a panel's own cover is
 the cover for the thing it is serving, and second-guessing it is how a grid ends up showing
 the wrong film's poster.</p>`,
+        },
+        {
+          id: 'scan',
+          title: 'Describing the whole catalogue',
+          html: `
+<p>Ordinarily film and series information arrives a tile at a time, for things you have
+actually looked at. That is the right default — it costs nothing for a library you never
+open — but it leaves the <a href="/wiki/television#search">genre filter</a> knowing only the
+corners of your catalogue you have already walked past.</p>
+<p><strong>Describe catalogue</strong>, under film and series information, asks about
+everything in one go. It appears once a key has been accepted, and it shows what it is doing
+while it runs: a progress bar, the number described so far out of the total, and how many of
+them The Movie Database holds nothing for.</p>
+<table>
+  <thead><tr><th>What it costs</th><th></th></tr></thead>
+  <tbody>
+    <tr><td>Requests to your IPTV provider</td><td><strong>None.</strong> It reads the catalogue already on the device</td></tr>
+    <tr><td>Requests to The Movie Database</td><td>One per title not already cached, paced at eight a second</td></tr>
+    <tr><td>Titles already cached</td><td>Skipped — including the ones cached as "no match"</td></tr>
+  </tbody>
+</table>
+<p>Three properties make it safe to press:</p>
+<ul>
+  <li><strong>It stops itself.</strong> If the service asks us to slow down, or rejects the
+    key, the scan stops asking rather than grinding on. It says which of those happened,
+    because waiting fixes one and nothing fixes the other.</li>
+  <li><strong>It resumes.</strong> Everything fetched before it stopped is cached and
+    counted, so starting again carries on from there rather than from the beginning. The same
+    is true if you cancel.</li>
+  <li><strong>Failures are never written down.</strong> A title that could not be asked about
+    is left unknown, not recorded as having no match. Caching a rate limit as an answer would
+    poison a catalogue for a fortnight and leave the genre filter confidently empty.</li>
+</ul>
+<p>The key is yours, so the pacing matters beyond this app: a throttled key is throttled for
+everything else you use it for.</p>`,
+        },
+        {
+          id: 'profiles-setting',
+          title: 'Who is watching',
+          html: `
+<p>Shows the current profile and offers <strong>Switch profile</strong>, which returns you to
+the chooser. Adding a profile happens in the chooser itself.</p>
+<p>Only favourites and resume points belong to a profile; everything else on this page is
+shared by everyone using the device. <a href="/wiki/profiles">Who is watching</a> sets out the
+whole division, and what guest does differently.</p>`,
         },
         {
           id: 'logos',
@@ -369,8 +563,10 @@ already set up."</p>`,
     <tr><td>Movies and Series tabs are empty</td><td>The source is an M3U. An M3U cannot say what kind of thing an entry is, so everything parses as Live. Films and series need Xtream.</td></tr>
     <tr><td>No programme information anywhere</td><td>Also an M3U — the format carries no schedule at all.</td></tr>
     <tr><td>"Cannot refresh", and details fail too</td><td>The provider is refusing the account. See below.</td></tr>
-    <tr><td>A stream buffers or will not start</td><td>The provider, the connection, or a format we do not support. Try another channel first — if every channel fails, it is not the stream.</td></tr>
+    <tr><td>A stream buffers or will not start</td><td>The provider, the connection, or a format we do not support. Try another channel first — if every channel fails, it is not the stream. Both players name the reason rather than hanging: unreachable, timed out, unsupported format, DRM, or gone.</td></tr>
     <tr><td>Artwork missing on live channels</td><td>The playlist supplied none. Optional logo lookup fills these in, and is off by default.</td></tr>
+    <tr><td>The genre filter is empty, or lists very little</td><td>Genres come from film and series information, which is off until you supply a key, and then fills in for titles you have looked at. <a href="/wiki/settings-reference#scan">Describe the catalogue</a> to fill it in one go.</td></tr>
+    <tr><td>Your favourites have vanished</td><td>Check <a href="/wiki/profiles">who is watching</a>. Favourites belong to a profile, and a guest session keeps none of them.</td></tr>
   </tbody>
 </table>`,
         },

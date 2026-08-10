@@ -54,7 +54,10 @@ knowing because they explain most of the architecture.</p>
     no "discover content" feature and no built-in provider list.</li>
   <li><strong>Not a backend.</strong> There is no server component, no user accounts, no
     telemetry, no cloud sync and no remote configuration. Nothing about the app can be
-    changed by anyone other than the person holding the device.</li>
+    changed by anyone other than the person holding the device.
+    <a href="/wiki/profiles">Profiles</a> are not an exception: they are rows in the local
+    database with no password and no server behind them, and they answer "whose favourites
+    are these" rather than "who is allowed to sign in".</li>
   <li><strong>Not a DRM client.</strong> No Widevine, no ClearKey, no PlayReady in v1. A DASH
     stream carrying Widevine will fail at the licence step, and that is correct behaviour
     rather than a bug to chase.</li>
@@ -242,7 +245,7 @@ than a matter of opinion.</p>`,
       slug: 'what-we-learned',
       title: 'What we learned',
       summary:
-        'Two episodes that left permanent marks on the code, and why the guards you will find are there.',
+        'Three episodes that left permanent marks on the code, and why the guards you will find are there.',
       sections: [
         {
           id: 'why',
@@ -312,17 +315,44 @@ screen is worded as "changing one changes what the app does — not merely what 
 says".</p>`,
         },
         {
+          id: 'unrun',
+          title: 'The checks that had never run',
+          html: `
+<p>For most of this project's life there was a CI workflow in the repository and no remote to
+run it on. It described a thorough gate: assemble, test, detekt, coverage, Lint, licence
+headers.</p>
+<p>The first run to actually execute failed on the first step, because <code>gradlew</code> had
+been committed without its executable bit from a system that has no such bit. Behind that,
+<code>detektAll</code> had been broken for its entire existence without anyone noticing, and
+the acceptance sweep described the licence-header check as "re-checked on every CI run" when
+it had only ever been run by hand.</p>
+<blockquote><p><strong>An unrun check and a passing check look identical from the inside.</strong>
+Both produce no failures.</p></blockquote>
+<p>This is why the wiki distinguishes what is verified mechanically from what has been seen
+working, and why <a href="/wiki/acceptance#sweep">the sweep</a> grades its evidence instead of
+listing ticks. A claim about what is checked is worth exactly as much as the last time
+somebody watched the check fail on purpose.</p>`,
+        },
+        {
           id: 'lessons',
-          title: 'What the two have in common',
+          title: 'What the three have in common',
           html: `
 <p>Each was a case of something looking finished from the inside.</p>
 <p>The concurrency cap looked like a rate limit. The settings screen looked like it configured
-the player. In both, the gap was only visible from outside — from the provider's firewall, and
-from a user pressing the control.</p>
-<p>That is the reasoning behind
-<a href="/wiki/acceptance">binary acceptance criteria</a>, and behind keeping a separate
-record of what was actually observed on hardware as opposed to what the code appears to
-do.</p>`,
+the player. The CI workflow looked like a gate. In every case the gap was only visible from
+outside — from the provider's firewall, from a user pressing the control, from a runner that
+had never been asked to try.</p>
+<p>The same shape keeps recurring in smaller ways, which is the useful part. A token bucket
+that <a href="/wiki/source-layer#bucket-arithmetic">paced requests at twice its documented
+rate</a> for its whole life. A Koin module whose arguments
+<a href="/wiki/testing#wiring">had shifted by one</a> and compiled perfectly. A player retry
+loop that <a href="/wiki/player#stutter">succeeded every time</a> and so never surfaced an
+error, while stuttering every few seconds.</p>
+<p>None of those could be found by reading the code, because in each case the code said what
+its author meant. That is the reasoning behind
+<a href="/wiki/acceptance">binary acceptance criteria</a>, behind measuring rather than
+arguing, and behind keeping a separate record of what was actually observed on hardware as
+opposed to what the code appears to do.</p>`,
         },
       ],
     },

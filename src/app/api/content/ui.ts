@@ -52,6 +52,31 @@ including when they had one and it was still loading. Advice that is wrong for t
 second is worse than a spinner.</p>`,
       },
       {
+        name: 'SearchViewModel',
+        kind: 'class',
+        summary: 'One search across every kind, and the genre filter beside it.',
+        detail: `
+<p>Deliberately one screen rather than a search box on each of Live, Movies and Series. Panels
+routinely list the same film as a film <em>and</em> as a one-episode series, so a search that
+answers for one kind is a search that appears to have found nothing.</p>
+<p>Keystrokes are debounced and the latest question cancels the previous one — the repository's
+reads are one-shot precisely so a term already moved past is not still being answered.</p>
+<p>It reuses <code>BrowseViewModel</code>'s guards for poster scores rather than reinventing
+them: a re-composed row must not re-ask, and concurrent lookups are capped.</p>`,
+        members: [
+          { name: 'uiState', summary: 'One SearchUiState. isActive is what moves the field off the middle of the screen.' },
+          { name: 'coveragePercent', summary: 'How much of the catalogue is described. Shown, not hidden — a filter is only as complete as its cache.' },
+        ],
+      },
+      {
+        name: 'ProfilesViewModel',
+        kind: 'class',
+        summary: 'The chooser: listing profiles, adding one, and starting a guest session.',
+        detail: `
+<p>Shared by both apps' choosers and both settings screens, so "who is watching" cannot mean
+two different things on one device.</p>`,
+      },
+      {
         name: 'PlayerViewModel',
         kind: 'class',
         summary: 'Loads an item into the player and records where the viewer got to.',
@@ -177,7 +202,39 @@ has nothing to do with it.</p>`,
       {
         name: 'TvTab',
         kind: 'enum',
-        summary: 'Live, Movies, Series, Favourites, Sources.',
+        summary: 'Search, Live, Movies, Series, Favourites.',
+        detail: `
+<p>Search is first and is the only one drawn as an icon: a magnifier needs no word beside it,
+and the leftmost position is where a remote already rests when the app opens. It is also where
+Back comes to rest — Back from any catalogue lands here, and Back again leaves the app, so a
+viewer pressing it repeatedly visibly gets closer to leaving rather than cycling.</p>
+<p><strong>Sources is deliberately not here.</strong> It lives in Settings: adding a playlist is
+something a viewer does once, and every position on the bar is one more press between somebody
+and what they came to watch.</p>`,
+      },
+      {
+        name: 'TvSearchScreen',
+        kind: 'class',
+        summary: 'The search tab, with a resting shape and a working one.',
+        detail: `
+<p>At rest it is the name and a field in the middle of the panel and nothing else — the whole
+screen says "type something", which is the only thing to do there. Asking a question, or
+opening Advanced, moves the field to the top and gives the rest of the panel to the answer.</p>
+<p>It reuses <code>TvCategoryList</code> whole rather than laying out rows of its own. That is
+not only economy: that list is the composable measured by the scroll-stability test, and the
+modifier order inside its poster is <a href="/wiki/tv-frontend#shake">the fix for the shake</a>.
+A second row implementation here would be a second place for it to come back unmeasured.</p>`,
+      },
+      {
+        name: 'TvProfileScreen / ProfileGate',
+        kind: 'class',
+        summary: 'The chooser, standing in front of the app until somebody has said who they are.',
+        detail: `
+<p>Not one of the overlays. Nothing is drawn that would have to read a favourite or a resume
+point before the app knows whose they are — which means no screen below has a state for "no
+profile" at all.</p>
+<p><code>ProfileGate</code> is the phone's equivalent, doing the same job for the same
+reason.</p>`,
       },
       {
         name: 'TvCategoryRow / TvRowItem',
