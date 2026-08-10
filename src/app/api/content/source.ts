@@ -170,7 +170,14 @@ authentication plus six catalogue calls and must not be slowed. The refill caps 
 traffic at two and a half requests a second, however many rows go by.</p>
 <blockquote><p><strong>A concurrency cap is not a rate limit.</strong> The guard this replaced
 allowed three requests in flight, which at 100 ms each is thirty a second — and that is what
-got the test account blocked.</p></blockquote>`,
+got the test account blocked.</p></blockquote>
+<p><strong>The balance is allowed to go negative, and that one detail is the sustained
+rate.</strong> A caller takes its token and waits off exactly what it borrowed. Clamping at
+zero instead lets the wait accrue a token that the <em>next</em> caller finds and passes
+straight through, so requests leave in pairs — which is what this limiter did for its whole
+life, pacing at 200 ms while the constant beside it said 400.</p>
+<p>Its regression test asserts elapsed time across twenty requests rather than the gap between
+two: a pairwise assertion passes happily while requests leave two at a time.</p>`,
       },
       {
         name: 'XtreamUrl',
@@ -221,6 +228,77 @@ whose account works everywhere else and not here.</p>`,
         name: 'SeriesInfoResponseSerializer',
         kind: 'object',
         summary: 'Handles a series payload whose shape changes with its contents.',
+      },
+    ],
+  },
+
+  {
+    id: 'source-tmdb',
+    module: ':source:tmdb',
+    packageName: 'dev.quiblo.source.tmdb',
+    layer: 'source',
+    summary: 'The optional film and series information client, and the key it spends.',
+    detail: `
+<p>Off unless the user supplies a key, and the key is <strong>theirs</strong>. That asymmetry
+shapes everything here: getting a panel throttled makes our app slow, while getting their key
+throttled affects everything else they use it for.</p>
+<p>There is no batch endpoint, so the per-title request shape is forced rather than chosen.</p>`,
+    types: [
+      {
+        name: 'TmdbAnswer',
+        kind: 'sealed interface',
+        summary: 'Found, NoMatch, or Refused — and the last two are not the same thing.',
+        detail: `
+<p>Three outcomes rather than a nullable record, and the distinction between the last two is
+the whole reason the type exists: <strong>"nothing matches this title" is an answer, and "I
+could not ask" is not.</strong> They used to be the same <code>null</code>.</p>
+<p>That conflation is harmless while browsing — a poster shows no score for a minute — and
+ruinous in bulk. A scan tripping a rate limit half way through would otherwise write tens of
+thousands of rows saying "matches nothing", each cached for a fortnight, and the search screen
+would report a described catalogue with no genres in it.</p>
+<blockquote><p><strong>A cache may hold answers. It may never hold failures.</strong></p></blockquote>`,
+        members: [
+          { name: 'metadataOrNull()', summary: 'Collapses the three back to two for screens, which render a missing plot and an unreachable host identically.' },
+        ],
+      },
+      {
+        name: 'TmdbRefusal',
+        kind: 'enum',
+        summary: 'RATE_LIMITED, KEY_REJECTED, UNAVAILABLE — the only detail a caller can act on.',
+        detail: `
+<p>Waiting fixes the first, nothing fixes the second, and the third is worth retrying later.
+Three outcomes because those are three different things to tell a viewer.</p>`,
+      },
+      {
+        name: 'TmdbRateLimiter',
+        kind: 'class',
+        summary: 'A token bucket: burst of 16, refilling one per 125 ms.',
+        detail: `
+<p>The same shape as <code>PanelRateLimiter</code>, and the same negative-balance detail, for
+the same hard-won reason. Sitting on the client means every path pays it — a poster tile, a
+detail screen, and a scan walking thirty thousand titles alike.</p>
+<p>It is also the scan's pacing. A worker that cannot get a token simply waits here, so the
+scanner needs no throttle of its own.</p>`,
+      },
+      {
+        name: 'TmdbClient',
+        kind: 'class',
+        summary: 'Search and detail lookups against the service.',
+        detail: `
+<p>Returns a <code>TmdbAnswer</code> rather than a nullable, so a caller cannot accidentally
+treat a refusal as an absence. A record notes whether only the search step ran: a poster tile
+needs a score, a detail screen needs everything, and recording which was fetched lets a tile be
+satisfied by one request and a detail screen upgrade the same row.</p>`,
+      },
+      {
+        name: 'cleanedForSearch / yearInTitle',
+        kind: 'object',
+        summary: 'Turns a provider title into something a metadata service can match.',
+        detail: `
+<p>Strips quality tags, language prefixes and release years from names that were never meant to
+be searched. Also the key the cache is stored under, and the comparison the
+<a href="/wiki/search#genres">genre filter</a> makes — which is why that filter runs off the
+main thread.</p>`,
       },
     ],
   },

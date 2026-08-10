@@ -41,6 +41,22 @@ rows in the channel table.</p>`,
 M3U parser assigns <code>LIVE</code> to everything. Films and series require Xtream.</p>`,
       },
       {
+        name: 'Profile',
+        kind: 'data class',
+        summary: 'Who is watching. Owns favourites and resume positions, and nothing else.',
+        detail: `
+<p>Player settings, hidden categories, the metadata key and the sources themselves stay
+app-wide: they describe the television and the account behind it rather than the person on the
+sofa, and a household that had to configure its playlist twice would rightly call that a
+bug.</p>
+<p>There is no password and no PIN. This answers "whose favourites are these", not "who is
+allowed to watch what" — the second is a different feature with different requirements.</p>`,
+        members: [
+          { name: 'isGuest', summary: 'The throwaway one. Its data is deleted when the session ends, and again at startup, because a killed process never tidies up after itself.' },
+          { name: 'NONE_ID', summary: 'The id used while nobody has chosen. Matches no row — ids start at 1 — so reads return nothing and writes land nowhere, and no screen needs a special case.' },
+        ],
+      },
+      {
         name: 'Category',
         kind: 'data class',
         summary: 'A grouping of items, derived by grouping channels rather than stored.',
@@ -166,6 +182,78 @@ not cached, so a panel coming out of a block recovers without a restart.</p>`,
         ],
       },
       {
+        name: 'SearchRepository',
+        kind: 'class',
+        summary: 'One search across live, films and series, plus the genre index behind the filter.',
+        detail: `
+<p>Separate from <code>ChannelRepository</code> because search is the one question that ignores
+the division the rest of the app is built on: a viewer looking for a title does not know which
+kind their provider filed it under.</p>
+<p><strong>Every read here is one-shot.</strong> A search is a question asked and answered, not
+a subscription — three open flows would re-run on every write to the channel table while
+somebody is still typing, and recompute an answer for a term already moved past.</p>
+<p>A blank query with no genre returns nothing rather than everything. An empty box is not a
+request for 67,000 rows.</p>`,
+        members: [
+          { name: 'search(...)', summary: 'Everything matching a term, optionally narrowed to one genre. Capped per kind.' },
+          { name: 'genreIndex(sourceId)', summary: 'Which genres can be filtered by, and how much of the catalogue has been described.' },
+          { name: 'matchDispatcher', summary: 'Injected. The genre filter cleans ~60,000 titles in Kotlin, which must not happen on the caller\'s thread.' },
+        ],
+      },
+      {
+        name: 'GenreIndex',
+        kind: 'data class',
+        summary: 'The filterable genres, and the coverage percentage quoted beside them.',
+        detail: `
+<p>Coverage is on screen rather than hidden because a genre filter built on a cache that has
+seen a tenth of a catalogue is telling less than the whole truth. Counted over distinct
+<em>cleaned</em> titles, so a film listed four times in four qualities counts once.</p>`,
+      },
+      {
+        name: 'ProfileRepository',
+        kind: 'class',
+        summary: 'Who is watching, and the switching of it.',
+        detail: `
+<p><strong>The active profile is a <code>StateFlow</code> with a synchronous value, and that
+shape is load-bearing.</strong> Every profile-scoped read needs the id — a browse query, a
+favourite toggle, a resume point from the player — and a suspending lookup in each would be a
+database round trip per call.</p>
+<p>It falls back to <code>Profile.NONE_ID</code> rather than to a real profile. That id matches
+no row, so reads come back empty and writes land nowhere, which is correct for the moment
+before the chooser has been answered and means no call site needs a guard.</p>`,
+        members: [
+          { name: 'activeProfile', summary: 'The chosen profile, or null when the chooser should be shown. Derived from the stored id and the rows, so a deleted profile puts the chooser back.' },
+          { name: 'endGuestSessions()', summary: 'Called at startup. Deleting the row takes its favourites and resume points by foreign key.' },
+          { name: 'startGuestSession(name)', summary: 'At most one guest exists at a time.' },
+        ],
+      },
+      {
+        name: 'TitleMetadataScanner',
+        kind: 'class',
+        summary: 'Fills the metadata cache for a whole catalogue, resumably.',
+        detail: `
+<p>Four workers and <em>no throttle of its own</em> — the pacing is the client's token bucket,
+which every worker waits on. A second rate limit would be two things to keep in agreement.</p>
+<p>One refusal stops everything: a volatile flag is read by each worker <em>before it asks</em>,
+so a rate limit stops the requests rather than merely stopping the counting. Work is computed
+by subtracting what is already cached, which is what makes starting again a resume.</p>`,
+        members: [
+          { name: 'state', summary: 'Idle, Preparing, Running, Finished, Stopped or Cancelled.' },
+          { name: 'progressFraction', summary: 'Null while preparing — a bar drawn against a total of zero means nothing. Shared by both settings screens so they cannot disagree.' },
+        ],
+      },
+      {
+        name: 'MetadataScanState',
+        kind: 'sealed interface',
+        summary: 'How far a scan got, and how it ended.',
+        detail: `
+<p>Stopped carries a <code>ScanRefusal</code> — rate limited, key rejected, or unavailable —
+because those call for different actions from the viewer. Collapsing them into "something went
+wrong" leaves the actionable one indistinguishable from the two that are not.</p>
+<p>A restatement of the TMDB client's refusal rather than a reuse of it, so nothing above
+<code>:core:data</code> has to know a metadata service exists.</p>`,
+      },
+      {
         name: 'CategoryRepository',
         kind: 'class',
         summary: 'Categories with local edits applied, and the edits themselves.',
@@ -204,7 +292,9 @@ viewer was last on.</p>`,
         summary: 'The optional film and series information, and its cache.',
         detail: `
 <p>Caches negative answers too. "The service was asked and had nothing" is an answer, and
-re-requesting it on every visit is the most wasteful thing a cache can do.</p>`,
+re-requesting it on every visit is the most wasteful thing a cache can do.</p>
+<p><strong>It never caches a failure.</strong> A rate limit or an unreachable host leaves a
+title unknown rather than recording it as unmatched — see <code>TmdbAnswer</code>.</p>`,
       },
       {
         name: 'ChannelLogoRepository',
@@ -242,7 +332,7 @@ format" has nothing to act on.</p>`,
     module: ':core:database',
     packageName: 'dev.quiblo.core.database',
     layer: 'core',
-    summary: 'Room: entities, DAOs and ten migrations.',
+    summary: 'Room: entities, DAOs and eleven migrations.',
     detail: `
 <p>Destructive migration is deliberately <strong>not</strong> enabled — dropping a user's
 sources on a schema change would be data loss. The schema JSON is exported and committed, and
@@ -264,12 +354,24 @@ refresh. Indices matter here more than anywhere else in the project — see
 <code>ChannelDao.observeBrowse</code>.</p>`,
       },
       {
+        name: 'ProfileEntity',
+        kind: 'data class',
+        summary: 'Who is watching. The parent that favourites and resume points cascade from.',
+        detail: `
+<p>Guest is a <em>row</em> rather than a flag in preferences, and that is the design. Deleting
+the row takes its favourites and its resume points with it by foreign key, atomically — so the
+promise that guest data does not outlive its session is kept by the database rather than by
+every screen remembering to help.</p>`,
+      },
+      {
         name: 'FavoriteEntity',
         kind: 'data class',
-        summary: 'A favourite, keyed by provider identity rather than row id.',
+        summary: 'A favourite, keyed by profile plus provider identity — never by row id.',
         detail: `
 <p>Deliberately not joined to <code>ChannelEntity</code> by primary key. Surviving a refresh
-in which the stream URL changed and every row was reinserted is the entire point.</p>`,
+in which the stream URL changed and every row was reinserted is the entire point.</p>
+<p><code>profileId</code> is part of the <em>primary key</em>, not merely a column, so two
+people can hold the same favourite independently.</p>`,
       },
       {
         name: 'ResumePositionEntity',
@@ -279,8 +381,9 @@ in which the stream URL changed and every row was reinserted is the entire point
 <p>The descriptive columns are denormalised rather than joined, because for an episode there
 is nothing to join to. A history list that joined would show films and silently drop every
 episode — which is most of what anyone actually resumes.</p>
-<p>Rows written before those columns existed keep resuming correctly and are excluded from the
-history list by their empty title.</p>`,
+<p>Keyed by profile and stable key, so two people can stop at different points in the same
+film. Rows written before the descriptive columns existed keep resuming correctly and are
+excluded from the history list by their empty title.</p>`,
       },
       {
         name: 'ProgrammeEntity',
