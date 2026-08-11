@@ -7,6 +7,96 @@ export const USING: WikiPart = {
     'Installing it, pointing it at a source, and what every screen and setting actually does. Written for someone holding the app, not reading the code.',
   pages: [
     {
+      slug: 'downloads',
+      title: 'Downloads',
+      summary:
+        'Which APK to take, how to check it is the one we published, and what a pre-release means.',
+      sections: [
+        {
+          id: 'where',
+          title: 'Where releases live',
+          html: `
+<p>Every release is published on
+<a href="https://github.com/quiblo-iptv/quiblo-app/releases">GitHub Releases</a>. There is no
+store listing, and the app never checks for updates — it has no server of ours to ask. New
+versions are something you come and get.</p>
+<p>Each release carries four files: two APKs, and a <code>.sha256</code> beside each.</p>`,
+        },
+        {
+          id: 'which-apk',
+          title: 'Which APK is yours',
+          html: `
+<table>
+  <thead><tr><th>File</th><th>Install it on</th></tr></thead>
+  <tbody>
+    <tr><td><code>quiblo-&lt;version&gt;.apk</code></td><td>A phone or a tablet</td></tr>
+    <tr><td><code>quiblo-tv-&lt;version&gt;.apk</code></td><td>Android TV or Google TV</td></tr>
+  </tbody>
+</table>
+<p>They are separate applications with different ids, so both can sit on one device without
+interfering. They share every layer beneath the screens; what differs is the interface, and a
+television interface driven by a remote is a different piece of work rather than the same one
+stretched.</p>
+<p><strong>The phone APK will install on a television and then never appear in its
+launcher.</strong> That is the most common confusion we hear about, and it is by design rather
+than a packaging fault: the phone build declares no leanback launcher entry, because a
+touch-first interface reached with a D-pad is worse than no entry at all. Install the
+<code>-tv</code> one there.</p>
+<p>The minimum Android version is <strong>11 (API 30)</strong> for both.</p>`,
+        },
+        {
+          id: 'verify',
+          title: 'Checking what you downloaded',
+          html: `
+<p>Each APK is published with its SHA-256 checksum beside it, so you can confirm the file you
+have is the file we built. Download both, put them in the same directory, and run:</p>
+<pre><code>sha256sum -c quiblo-&lt;version&gt;.apk.sha256</code></pre>
+<p>On Windows, <code>certutil -hashfile quiblo-&lt;version&gt;.apk SHA256</code> prints the
+hash to compare by eye.</p>
+<p>This is worth doing because an IPTV player is exactly the kind of app that gets
+repackaged with something added. A checksum that matches means the file came from our build,
+whatever site you found it on — and a checksum that does not match means throw it away, no
+matter how plausible the source looks.</p>
+<p>Every published APK is signed with the project's release key. Android will refuse to
+install a build signed with a different key over one of ours, which is a second, automatic
+version of the same check.</p>`,
+        },
+        {
+          id: 'stable-and-pre',
+          title: 'Stable releases and pre-releases',
+          html: `
+<p>Some releases are marked <strong>Pre-release</strong> on that page. The difference is a
+claim about testing, not about the build process — both are built and signed identically by
+the same automation.</p>
+<ul>
+  <li><strong>A beta</strong> is feature-complete for its version and has been swept on real
+    devices. It is the one to take if you want to help us find things.</li>
+  <li><strong>An alpha</strong> exists to prove the release machinery works. It is not for
+    watching television with.</li>
+  <li><strong>A stable release</strong> is one with no pre-release marker, and it is what
+    GitHub offers as "Latest".</li>
+</ul>
+<p>Version numbers follow semantic versioning: the middle number moves when something is
+added, the last when something is fixed.</p>`,
+        },
+        {
+          id: 'upgrading',
+          title: 'Upgrading, and the one case that needs an uninstall',
+          html: `
+<p>Installing a newer APK over an older one keeps everything — sources, favourites, history
+and profiles all survive, and the database migrates itself.</p>
+<p><strong>The exception is a build somebody handed you before the project published signed
+releases.</strong> Those were signed with the Android debug key, and Android will not upgrade
+over one with a properly-signed build: the install simply fails, usually with a message about
+conflicting signatures that does not explain itself. Uninstall the old build first.</p>
+<p>On a television, "uninstall" can also mean uninstalling for <em>another user account on the
+device</em> — a build installed under a second profile blocks the install without appearing in
+the launcher you are looking at. If a television refuses a release for no visible reason,
+that is the first thing to check.</p>`,
+        },
+      ],
+    },
+    {
       slug: 'getting-started',
       title: 'Getting started',
       summary: 'Install the APK, add a playlist or an account, and start watching.',
