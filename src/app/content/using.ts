@@ -123,9 +123,15 @@ not a packaging error.</p>
           id: 'first-source',
           title: 'Adding your first source',
           html: `
-<p>Quiblo ships with nothing. First launch asks who is watching — see
-<a href="/wiki/profiles">Who is watching</a>, and answer it with a name, or with Guest — and
-then has no content, so the next step is to add a source.</p>
+<p>A fresh install opens on two short screens: what Quiblo is, and what you are agreeing to.
+They are the <a href="/wiki/terms">terms</a> in brief, with the full version a link away — the
+text is on the screen itself because a television cannot usefully follow a link. There is no
+decline button. Somebody who does not accept can read and leave; an app that force-quits on
+decline is theatre, and it teaches people to press the button without reading. You will not see
+these screens again unless the terms materially change.</p>
+<p>Then Quiblo asks who is watching — see <a href="/wiki/profiles">Who is watching</a>, and
+answer it with a name, or with Guest. After that it has no content, so the next step is to add
+a source.</p>
 <p>On the phone that is the <strong>Sources</strong> destination. On the television it is
 <strong>Settings</strong>, then <strong>Sources</strong>: adding a playlist is something a
 viewer does once, and a remote should not spend a top-level position on it.</p>
