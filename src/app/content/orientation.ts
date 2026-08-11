@@ -125,6 +125,28 @@ playlist contains and exercises no editorial control over it.</p>
 repository resolves even by accident.</p>`,
         },
         {
+          id: 'attribution',
+          title: 'What we owe the code and services we use',
+          html: `
+<p>Both apps list every third-party component they ship, under <strong>Settings</strong> — on
+the television it is at the bottom, under <em>About</em>, beside the version. Nearly all of
+them are Apache-2.0, which requires those notices to travel with the binary; one is MIT.</p>
+<p>That list used to be kept by hand, and a list kept by hand stops being true without ever
+failing. It is now checked against the build: a task resolves what each app actually ships —
+several hundred modules, not the forty named in the version catalogue — and the build fails
+when something ships that the list does not mention. The first run found <strong>118
+components listed nowhere</strong>, including the cryptography library that holds your
+password.</p>
+<p>Two services are credited rather than bundled, and each sentence sits beside the switch that
+turns its feature on:</p>
+<ul>
+  <li><strong>The Movie Database.</strong> "This product uses the TMDB API but is not endorsed
+    or certified by TMDB." It runs on a key you supply, and does nothing without one.</li>
+  <li><strong>iptv-org</strong>, the community-maintained channel list that fills in logos your
+    playlist did not provide. Off until you turn it on.</li>
+</ul>`,
+        },
+        {
           id: 'privacy',
           title: 'Privacy, as an architectural rule',
           html: `
