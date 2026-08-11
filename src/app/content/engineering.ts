@@ -420,6 +420,31 @@ decide, not a licence to spend the first number.</p>
 it brings in carry the types on their own.</p>`,
         },
         {
+          id: 'two-lanes',
+          title: 'Prose does not pay for an Android build',
+          html: `
+<p>Every pull request used to run ten to eighteen minutes of Android build, including the ones
+that only fixed a typo. Now the build is skipped when nothing but prose changed — around thirty
+seconds instead — while the checks that prose <em>can</em> break keep running on everything: the
+leaked-playlist and forbidden-brand greps, the licence headers, and a parse of every workflow
+file.</p>
+<p>Two decisions are worth copying. <strong>The filter lives inside a job, not on the trigger</strong>
+— a workflow filtered out by <code>paths:</code> never reports its check at all, so a branch rule
+requiring that check waits forever for a run that will never happen. A <code>Gate</code> job
+always reports instead, failing when a needed job failed and passing when one was skipped, and
+that is the name to require. And <strong>prose is an allowlist</strong>: anything unnamed counts
+as code, so a new directory nobody thought about gets the full build and a wrong guess costs a
+slow pull request rather than an unbuilt one.</p>
+<p>On a merge the same rule applies, with one extra condition that is load-bearing: the gate is
+skipped only when nothing will publish <em>and</em> the change was prose. The release class is
+read from every commit since the last tag, so a feature commit whose own run was cancelled can be
+published by the next merge along — skipping on "this push was prose" alone would ship a binary
+no gate had seen.</p>
+<p>It also arrived with a bug worth knowing: <code>git diff --name-only</code> quotes any path
+containing a non-ASCII byte, so every document whose filename carried an em dash read as code
+until the classifier was told <code>core.quotepath=false</code>.</p>`,
+        },
+        {
           id: 'gate-twice',
           title: 'The gate that is deliberately not run twice',
           html: `
