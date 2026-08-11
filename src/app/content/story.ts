@@ -212,6 +212,31 @@ is a guard on a property, not a reproduction of the fault, and a green run is no
 more than that.</p>`,
         },
         {
+          id: 'context-is-the-cost',
+          title: 'Notes for an agent are a running cost, not a filing cabinet',
+          html: `
+<p>An agent reads its notes on every session, so a note is not free the way a document is free.
+Ours grew to 22,000 tokens across 28 files, of which the index alone — loaded every time,
+whatever the task — was 1,084.</p>
+<p>Three habits caused it, and all three are the obvious thing to do:</p>
+<ul>
+  <li><strong>Writing status into notes.</strong> Which gate is open, what shipped last week —
+    all of it true, all of it stale within days, and all of it already in the repository. Notes
+    should point at the file, not copy it.</li>
+  <li><strong>Appending instead of splitting.</strong> One file grew to seven facts because each
+    new lesson was added to the end of the nearest one. Recall loads the whole file, so asking
+    about one trap paid for all seven.</li>
+  <li><strong>Writing the index like prose.</strong> Its only job is to help decide whether to
+    open a file. A sentence per entry is a paragraph nobody needed.</li>
+</ul>
+<p>Compacting on those three rules cut the two worst files by about 70% and the always-loaded
+index by a third, without deleting a single lesson — everything removed was either status or a
+copy of something in the repository.</p>
+<p><strong>The rule that came out of it:</strong> a note earns its place by being something the
+repository does not already say. Anything else is a second copy to keep true, and the copy that
+matters least is the one that will be kept up to date.</p>`,
+        },
+        {
           id: 'what-transfers',
           title: 'What transfers, and what does not',
           html: `
