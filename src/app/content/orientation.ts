@@ -153,6 +153,102 @@ chooses and the app never asks for access to anything else.</p>`,
     },
 
     {
+      slug: 'terms',
+      title: 'Terms of use',
+      summary:
+        'What Quiblo is, what you are responsible for, and where your data goes. The page the app links to.',
+      sections: [
+        {
+          id: 'summary',
+          title: 'The short version',
+          html: `
+<p>Quiblo is a media player. <strong>It ships with no content and no way to find any</strong>,
+you supply your own sources and are responsible for them, and nothing you enter leaves your
+device except to the servers you named yourself.</p>
+<p>The rest of this page is that in full. It is the page the app links to when it first
+opens, and it is deliberately short enough to read.</p>`,
+        },
+        {
+          id: 'no-content',
+          title: 'Quiblo supplies no content',
+          html: `
+<p>This app ships with <strong>no playlists, no channel list, no provider directory, and no
+way to find any</strong>. It is a player, in the same category as VLC or mpv. It has no
+knowledge of what your playlist contains and exercises no control over it.</p>
+<p><strong>You are solely responsible for the sources you configure and for the legality of
+accessing them where you live.</strong> If you do not already have a playlist or an IPTV
+subscription, this app is of no use to you, and the project will not help you find one.</p>
+<p>Requests for sources, providers or bundled content are closed without discussion. Posting
+a playlist URL, provider hostname or credential anywhere in the project results in an
+immediate ban.</p>`,
+        },
+        {
+          id: 'data',
+          title: 'Where your data goes',
+          html: `
+<p>Nowhere. That is not a promise made in a policy — each line below is an architectural rule
+the code is held to, and two of them fail the build if broken.</p>
+<ul>
+  <li><strong>There is no account and no server of ours.</strong> Quiblo has no backend. There
+    is nothing to sign up for and nothing to sign in to.</li>
+  <li><strong>The app never phones home.</strong> The only outbound traffic goes to hosts you
+    entered yourself. No analytics, no crash-reporting service, no update check against a
+    server we control — which is also why the app cannot update itself.</li>
+  <li><strong>Credentials never leave the device.</strong> Xtream usernames and passwords are
+    stored encrypted, and are never written to logs, exports or crash traces. Export a backup
+    and the passwords are not in it; the app says so on the screen where you make one.</li>
+  <li><strong>Everything else is local too</strong> — your sources, favourites, watch history
+    and profiles live in a database on the device and are not copied anywhere.</li>
+  <li><strong>Two features reach a third party, both off until you turn them on:</strong>
+    film and series information, and channel logo lookup. Each needs a key or a switch from
+    you, and neither sends anything about you — only the title being looked up.</li>
+</ul>
+<p>The permissions the app asks for are <code>INTERNET</code> and
+<code>ACCESS_NETWORK_STATE</code>. There is no storage permission: files are read and written
+through the system picker, so a file lands where you put it.</p>`,
+        },
+        {
+          id: 'warranty',
+          title: 'What is not warranted',
+          html: `
+<p>Quiblo is free software under the GPLv3, and that licence's sections 15 and 16 say this in
+legal language. In plain words: <strong>the software is provided as-is, with no warranty of
+any kind</strong>, and the people who wrote it are not liable for damages arising from using
+it.</p>
+<p>That is the standard free-software position and it is not a disclaimer of responsibility
+for the code's quality — see <a href="/wiki/acceptance">how this project decides something
+works</a>. It means nobody is promising the app will suit your purpose, and nobody is
+underwriting what happens if it does not.</p>`,
+        },
+        {
+          id: 'no-gate',
+          title: 'No age gate, and no regional filter',
+          html: `
+<p>Quiblo does not check who you are or where you are, and this is a decision rather than an
+omission.</p>
+<p>The app has no server, no accounts and no way to verify anything about anybody. A control
+that appears to restrict access while verifying nothing is worse than no control at all: it
+offers false assurance to a parent and no obstacle to anyone else. The same reasoning keeps a
+parental PIN out of the app.</p>
+<p>What you watch, and who in your household can reach it, is therefore yours to manage.
+<a href="/wiki/profiles">Profiles</a> separate favourites and history between people; they are
+a convenience, not a security control, and the app says so where they are created.</p>`,
+        },
+        {
+          id: 'changes',
+          title: 'If these terms change',
+          html: `
+<p>This page carries a version. When it changes in a way that affects what you agreed to, the
+app asks again on the next launch rather than changing the terms underneath you. A correction
+to wording does not.</p>
+<p>The page is part of the wiki, which lives in a public repository — so every change to it
+has a commit, a date and an author, and you can read what changed rather than take our word
+for it.</p>`,
+        },
+      ],
+    },
+
+    {
       slug: 'scope-and-principles',
       title: 'Scope and principles',
       summary:
