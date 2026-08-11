@@ -230,5 +230,101 @@ that includes the ones about ourselves.</p>`,
         },
       ],
     },
+    {
+      slug: 'what-it-cost',
+      title: 'What it cost',
+      summary:
+        'Nineteen sessions, ten days, and the number nobody expects: fresh input was 38,307 tokens against 2.71 billion cache reads.',
+      sections: [
+        {
+          id: 'headline',
+          title: 'The shape of the bill',
+          html: `
+<p>Ten days, nineteen sessions, one model. Every figure here is generated from local transcript
+records by a script in the repository, not typed in by hand.</p>
+<table>
+  <tbody>
+    <tr><td>Span</td><td>2 – 11 August 2026, 19 sessions</td></tr>
+    <tr><td>Assistant messages</td><td>9,176</td></tr>
+    <tr><td><strong>Output tokens</strong></td><td><strong>8,085,931</strong></td></tr>
+    <tr><td>Cache reads</td><td>2,711,252,834</td></tr>
+    <tr><td>Cache writes</td><td>26,221,472</td></tr>
+    <tr><td><strong>Fresh input tokens</strong></td><td><strong>38,307</strong></td></tr>
+  </tbody>
+</table>
+<p>Read the last two rows together, because that is the whole story: <strong>99.999% of everything
+this project fed a model was a cache read.</strong> Fresh input — the tokens that had never been
+seen before — came to thirty-eight thousand across ten days, against two point seven
+<em>billion</em> read back out of cache.</p>`,
+        },
+        {
+          id: 'what-that-means',
+          title: 'Why that number is the interesting one',
+          html: `
+<p>The intuition most people bring to this is that an agent costs what it writes. It does not.
+It costs what it <em>re-reads</em>, over and over, on every single turn.</p>
+<p>A long session is one enormous and slowly growing context — the frozen scope, the architecture
+notes, the file being edited, the last twenty tool results — and every message pays to read all of
+it again. Output is the small number: eight million tokens of actual writing against two point
+seven billion tokens of re-reading, a ratio of roughly <strong>335 to 1</strong>.</p>
+<p>Two things follow, and they are the practical content of this page:</p>
+<ul>
+  <li><strong>Caching is not an optimisation here, it is the economics.</strong> At 99.999% cache
+    read, the difference between a warm context and a cold one is the difference between a
+    workable tool and an unusable one.</li>
+  <li><strong>A long session is cheaper than it looks, and a scattered one is dearer.</strong> The
+    expensive move is not asking for more; it is repeatedly rebuilding a context that was already
+    warm.</li>
+</ul>`,
+        },
+        {
+          id: 'against-the-work',
+          title: 'Lined up against what shipped',
+          html: `
+<p>Sessions are dated and so is everything in the repository, so the two can be put side by side.
+Output tokens by the day a session started:</p>
+<table>
+  <thead><tr><th>Day</th><th>Output tokens</th><th>What shipped</th></tr></thead>
+  <tbody>
+    <tr><td>2 Aug</td><td>1,269,581</td><td>The parsers and the data layer</td></tr>
+    <tr><td>3 Aug</td><td>1,629,558</td><td>The player, and the scope freeze admitting Android TV</td></tr>
+    <tr><td>4 Aug</td><td>1,445,645</td><td>The television frontend</td></tr>
+    <tr><td>5 Aug</td><td>831,988</td><td>First CI runs — and the two failures they exposed immediately</td></tr>
+    <tr><td>6 Aug</td><td>75,654</td><td>The shake, solved on the device</td></tr>
+    <tr><td>9 Aug</td><td>1,136,027</td><td>Search, the catalogue scan, profiles</td></tr>
+    <tr><td>10 Aug</td><td>994,119</td><td>Signed releases, the release-on-merge lane</td></tr>
+    <tr><td>11 Aug</td><td>703,359</td><td>The legal round, the licence check, the first-launch terms</td></tr>
+  </tbody>
+</table>
+<p><strong>The most interesting row is the smallest one.</strong> 6 August cost 75,654 output
+tokens — under a tenth of any other working day — and what it produced was the fix for the bug
+that had taken four wrong answers across the previous days. The reason it was cheap is that the
+answer did not come from the model: it came from
+<a href="/wiki/how-this-was-built#failures">someone watching the television</a>. Cost tracks
+typing, not difficulty.</p>`,
+        },
+        {
+          id: 'limits',
+          title: 'What these numbers are not',
+          html: `
+<p><strong>This is a local record, not a billing statement.</strong> It is generated from the
+transcripts Claude Code keeps on one machine, and it should be read as a floor rather than a
+total:</p>
+<ul>
+  <li>A session whose transcript was truncated or removed is simply absent from it.</li>
+  <li>Work done before the project was renamed lives in a separate directory, which is included —
+    but anything from before those records began is not counted at all.</li>
+  <li>Tokens are not money. There is no price in this table on purpose: the rate depends on a
+    plan we are not going to pretend to know from here.</li>
+</ul>
+<p><strong>And there is nothing in it but numbers, by construction.</strong> The transcripts
+contain real provider hostnames and the debugging that got an account blocked, which is exactly
+what this project forbids anywhere near its repository. So the script that produces this page
+never reads a text field at all — only a timestamp, a model name and a usage record — and it
+refuses to write its own output if any string in it is not a date, a session id or a model name.
+The safety is structural rather than careful.</p>`,
+        },
+      ],
+    },
   ],
 };
