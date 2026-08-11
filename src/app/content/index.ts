@@ -2,6 +2,7 @@ import type { LocatedPage, WikiPart } from '../core/wiki.model';
 import { ARCHITECTURE } from './architecture';
 import { ENGINEERING } from './engineering';
 import { ORIENTATION } from './orientation';
+import { STORY } from './story';
 import { USING } from './using';
 
 /**
@@ -15,6 +16,9 @@ export const WIKI: readonly WikiPart[] = [
   USING,
   ARCHITECTURE,
   ENGINEERING,
+  // Last, deliberately. A reader arriving to find out what Quiblo is should meet the app before
+  // they meet a page about how it was made.
+  STORY,
 ];
 
 /** Every page, flattened, in the order a reader would meet them. */
