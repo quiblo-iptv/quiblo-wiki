@@ -266,7 +266,18 @@ only available key, and the join is done in code rather than SQL.</p>`,
       {
         name: 'GuideRepository',
         kind: 'class',
-        summary: 'What is on now, and now/next for one channel.',
+        summary: 'What is on now, now/next for one channel, and a whole listing across a window.',
+        detail: `
+<p><code>observeSchedule</code> reads from storage rather than from a fetch, for the reason
+everything else here does: with no connection the timeline still draws whatever was last
+stored. Its query asks for programmes that <em>overlap</em> the window rather than start inside
+it, because the programme a viewer is watching began before the window did and a timeline that
+omitted it would open with a hole where "now" is.</p>
+<p><code>refreshFullGuideFor</code> is a separate entry point from <code>refreshGuideFor</code>
+on purpose — it is the heavier call, made on an explicit request — but both share one private
+refresh that owns the guards, the backoff and the wholesale replace. Two copies would give the
+two paths two chances to disagree about when a panel has had enough, and the panel does not care
+which of them asked.</p>`,
       },
       {
         name: 'SourceRepository',

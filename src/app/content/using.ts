@@ -174,6 +174,7 @@ has met most often. See <a href="/wiki/what-we-learned#blocks">the provider bloc
     <tr><td>Anything else on a browse screen</td><td><strong>none</strong> — favouriting, scrolling and filtering are local</td></tr>
     <tr><td>A live row the list <em>settles</em> on</td><td>one guide call, once ever per channel, skipped when cached</td></tr>
     <tr><td>A live row merely scrolled past</td><td><strong>none</strong></td></tr>
+    <tr><td>Asking a channel for its <a href="/wiki/phone-app#guide">full listing</a></td><td>one call, once per channel per session — and only when you ask</td></tr>
     <tr><td>Opening a series</td><td>one call, cached for the session</td></tr>
     <tr><td>Opening a film</td><td>one call, cached for the session</td></tr>
   </tbody>
@@ -328,6 +329,28 @@ and held for the session — they are never stored as rows — so re-opening a s
 at a minute ago costs nothing.</p>`,
         },
         {
+          id: 'guide',
+          title: 'What is on, and what is on later',
+          html: `
+<p>Long-press a live channel. A sheet opens with <strong>Now</strong> and <strong>Next</strong>,
+and under them the rest of the day on a timeline: an hour behind, twelve hours ahead, each
+programme drawn as wide as it is long. It opens scrolled to what is playing rather than to the
+left edge, because the hour behind is there so the programme on now is whole — not so anybody
+has to scroll past it.</p>
+<p>A plain tap still plays. That is what a tap means ninety-nine times out of a hundred, and the
+guide is the one time in a hundred.</p>
+<p>Tap any block to have it written out underneath. A half-hour programme is a narrow block: it
+has room for a title and none for a plot.</p>
+<p>Two things the shape of the strip tells you that a "now and next" label cannot. <strong>A hole
+is drawn as a hole</strong> — a channel that goes off air looks different from a provider that
+stopped answering, where stretching the neighbours over the gap would make both look complete.
+And <strong>the times are your television's</strong>: everything is stored in UTC and converted
+once, at the moment it is drawn, so a panel in another country still reads correctly.</p>
+<p>Only the first ask costs a request. The full listing is fetched once per channel per session,
+and never while a list is scrolling — see
+<a href="/wiki/getting-started#what-costs">what costs a request</a>.</p>`,
+        },
+        {
           id: 'player',
           title: 'The player',
           html: `
@@ -339,7 +362,20 @@ at a minute ago costs nothing.</p>`,
     volume.</li>
   <li><strong>Screen lock</strong>, so a pocket or a lap cannot interfere.</li>
   <li><strong>Track selection</strong> for subtitles and audio.</li>
+  <li><strong>Subtitle files</strong> — whatever your panel supplies for a film, plus any
+    <code>.srt</code>, <code>.vtt</code>, <code>.ass</code> or <code>.ttml</code> you pick off
+    the device. A picked file is copied into the app and remembered against the title, so it is
+    still there next time and survives the file being moved or renamed.</li>
+  <li><strong>Subtitle appearance</strong> — size, colour and the box behind the words, offered
+    while a subtitle is actually on screen so the effect is visible as it is chosen. It starts
+    from the caption style set in Android's own accessibility settings, and
+    <em>Match system</em> goes back to it.</li>
 </ul>
+<p>Two things worth knowing about subtitle files. The format is read from the file rather than
+from its name, because a <code>.txt</code> holding SubRip is common and an extension is a claim
+rather than a fact. And <strong>the encoding is detected, not assumed</strong>: an Arabic
+<code>.srt</code> in windows-1256 — which is most of them — was a screen of symbols under a
+UTF-8 assumption.</p>
 <p>Seeking is meaningless on a live stream, so the skip controls are absent there rather than
 present and inert.</p>
 <p>Playback position is remembered per item, and per episode within a series.</p>`,
@@ -404,6 +440,7 @@ testable function rather than buried in a modifier.</p>
     <tr><td>Left / Right</td><td>Move along the tabs; past the last one lies the gear</td></tr>
     <tr><td>Down</td><td>Leave the bar for the content</td></tr>
     <tr><td>Centre / Enter</td><td>Enter the content, or open settings when on the gear</td></tr>
+    <tr><td>Centre <em>held</em>, on a channel</td><td>Its <a href="/wiki/television#guide">full listing</a>, across the bottom</td></tr>
     <tr><td>Back</td><td>Retreat one step; from a catalogue, back to Search; from Search, exit</td></tr>
   </tbody>
 </table>
@@ -423,6 +460,26 @@ is trying to leave, and each press should visibly get closer to it rather than c
 <p>Where a key does nothing, it is left <em>unhandled</em> rather than swallowed, so it falls
 through to the system instead of being absorbed by a player that has nothing to do with
 it.</p>`,
+        },
+        {
+          id: 'guide',
+          title: 'The programme guide',
+          html: `
+<p>Hold the centre button on a channel and its listing appears across the bottom of the screen:
+an hour behind, twelve ahead, each programme as wide as it is long. Left and right walk it, and
+Back closes it.</p>
+<p><strong>It is a strip, not a dialog.</strong> This app has never put a modal over a television
+screen and this is not the place to start one — the channel list stays visible behind the panel,
+dimmed, so the listing is still attached to the thing it belongs to.</p>
+<p>It opens on the programme playing rather than at the left edge, so the remote has something
+to do the moment it appears. <strong>What is on now is said, not only drawn</strong>: a marker
+line is invisible to somebody three metres away reading whichever block has focus, so the block
+carries its own mark and the header says it in words, alongside the times and the plot. A block
+is only as wide as the programme is long, and a half-hour one has room for a title and nothing
+else — the header is where a listing is actually read.</p>
+<p>The arithmetic behind it is the phone's, unchanged. Only the drawing differs, which is
+<a href="/wiki/architecture-overview#no-forking">the rule about not forking</a> applied one level below
+the ViewModels.</p>`,
         },
         {
           id: 'search',

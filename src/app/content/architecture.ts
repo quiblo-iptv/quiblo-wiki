@@ -64,7 +64,17 @@ the second one will be forgotten, which is how
 <p>The same reasoning applies below the ViewModels. When the television needed a text field
 that survives the on-screen keyboard, the fix went into a shared component rather than being
 copied into the two screens that need typing: a copy each is how a fix lands in one and is
-forgotten in the other.</p>`,
+forgotten in the other.</p>
+<h4>What is shared when the drawing cannot be</h4>
+<p>Sometimes both apps need the same answer and cannot possibly draw it the same way. The
+programme timeline is the clearest case: a phone drags it under a finger and a television walks
+it with a D-pad, but <em>where each programme sits</em>, how wide it is and which one is on now
+are the same arithmetic on both.</p>
+<p>So the arithmetic is a plain function with no Compose in it — <code>guideTimeline</code> in
+<code>:feature:browse</code> — and each app draws its own strip from the fractions it returns.
+The decisions are shared; the drawing is not. That split is also what makes the awkward parts
+testable: overlapping listings, holes a provider left, and programmes that began before the
+window are all decided in a JVM test rather than argued about in front of a television.</p>`,
         },
         {
           id: 'di',
