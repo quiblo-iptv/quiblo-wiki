@@ -35,10 +35,18 @@ M3U film shows its artwork and title without an error.</p>`,
       {
         name: 'GuideSource',
         kind: 'interface',
-        summary: 'Optional: programme data for a channel.',
+        summary: 'Optional: programme data for a channel — now and next, or the whole listing.',
         detail: `
 <p>Separate for the same reason as the others. An M3U playlist carries no schedule, so it does
-not implement this — the absence of a guide is a property of the format, not a failure.</p>`,
+not implement this — the absence of a guide is a property of the format, not a failure.</p>
+<p>Two calls, because they are asked for at different moments and cost different amounts.
+<code>guideFor</code> is the small window a list row shows; <code>fullGuideFor</code> is
+everything the provider holds, for a timeline, and is made only when a viewer asks. On Xtream
+they are <code>get_short_epg</code> and <code>get_simple_data_table</code>.</p>
+<p><strong><code>fullGuideFor</code> defaults to <code>guideFor</code></strong>, so a provider
+with only one kind of guide call is complete without writing anything: it returns the window it
+has, the timeline draws that window, and the screen is honest about being short rather than
+empty.</p>`,
       },
       {
         name: 'ContentFetcher',

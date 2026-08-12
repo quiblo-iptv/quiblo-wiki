@@ -39,6 +39,8 @@ accident:</p>
           { name: 'onPosterVisible(channel)', summary: 'Called when a poster settles. Films and series only.' },
           { name: 'selectCategory(title) / search(text)', summary: 'Filter and search, both resolved in SQL.' },
           { name: 'channelForHistory(entry)', summary: 'Resolves a history entry back to a playable row. Null when the provider has dropped the title.' },
+          { name: 'scheduleFor(channel)', summary: "One channel's listing across the window a timeline draws, straight from storage." },
+          { name: 'requestFullGuide(channel)', summary: 'Asks the provider for the whole listing. Live only, once per channel per session, and never from a scroll.' },
         ],
       },
       {
@@ -50,6 +52,26 @@ accident:</p>
 were conflated once, so every browse screen opened by telling the user to add a playlist —
 including when they had one and it was still loading. Advice that is wrong for the first
 second is worse than a spinner.</p>`,
+      },
+      {
+        name: 'GuideTimeline / GuideBlock',
+        kind: 'data class',
+        summary: "One channel's listing laid out against elapsed time, by guideTimeline(). No Compose in it, on purpose.",
+        detail: `
+<p>Both apps draw a timeline and neither draws it the same way — a phone scrolls it under a
+finger, a television walks it with a D-pad — but where each programme sits, how wide it is and
+which one is on now are the same answers on both. So they are decided here, in a plain function,
+and each app turns the fractions into its own drawing.</p>
+<p>The cases it exists to get right are the ones a provider actually sends: listings that
+overlap (the earlier one keeps its ground), listings with holes (a hole is a block, so a
+timeline missing an hour does not look complete), and programmes that began before the window
+(clipped, never dropped). <code>isNow</code> is carried per block rather than left to a marker
+line, because a viewer three metres from the screen is reading whichever block has focus.</p>`,
+        members: [
+          { name: 'guideTimeline(programmes, now, hoursBehind, hoursAhead)', summary: 'Lays a listing out across the window. An hour behind and twelve ahead by default.' },
+          { name: 'guideWindow(now, …)', summary: 'The window itself, so the query and the drawing cannot disagree about it.' },
+          { name: 'GuideBlock.nowFraction / isNow', summary: 'Where the marker goes, and which block is playing. Null fraction when the window does not contain now.' },
+        ],
       },
       {
         name: 'SearchViewModel',
