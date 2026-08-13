@@ -2,11 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Quiblo wiki</title>
+  <!--
+    What a crawler sees before any JavaScript runs.
+
+    `SeoService` rewrites all of this per route, and modern crawlers execute the page and read
+    the rewritten version — but not all of them do, not on the first pass, and a link preview
+    generator almost never does. So the static copy has to be the front page's own tags rather
+    than a placeholder, because the front page is what an unrendered crawl lands on.
+  -->
+  <title>Quiblo — free, open source IPTV player for Android and Android TV</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Documentation for Quiblo, a free and open-source Android IPTV client: what it is, how it is built, and why it is shaped the way it is.">
+  <meta name="description" content="Quiblo is a free, open source IPTV player for Android phones and Android TV. Bring your own M3U or Xtream playlist — no ads, no accounts, no tracking.">
   <meta name="color-scheme" content="dark light">
+  <link rel="canonical" href="https://quiblo-iptv.github.io/quiblo-wiki/">
+
+  <meta property="og:site_name" content="Quiblo">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Quiblo — free, open source IPTV player for Android and Android TV">
+  <meta property="og:description" content="Plays Live TV, films and series from playlists you supply — M3U, M3U8 or Xtream Codes. No ads, no accounts, no tracking, no backend.">
+  <meta property="og:url" content="https://quiblo-iptv.github.io/quiblo-wiki/">
+  <meta property="og:image" content="https://quiblo-iptv.github.io/quiblo-wiki/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Quiblo — free, open source IPTV player for Android and Android TV">
+  <meta name="twitter:description" content="Plays Live TV, films and series from playlists you supply — M3U, M3U8 or Xtream Codes. No ads, no accounts, no tracking, no backend.">
+  <meta name="twitter:image" content="https://quiblo-iptv.github.io/quiblo-wiki/og-image.png">
+
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <script>
     // Set before first paint so the page never flashes the wrong theme. The service takes

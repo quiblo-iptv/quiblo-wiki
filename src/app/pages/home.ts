@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { API, typeCount } from '../api/content';
 import { WIKI } from '../content';
+import { FAQ } from '../core/structured-data';
 
 /** The contents page: every part, every page, with its one-line summary. */
 @Component({
@@ -11,10 +12,16 @@ import { WIKI } from '../content';
     <article class="page">
       <header class="page__head">
         <p class="page__part">Quiblo</p>
-        <h1>The Quiblo wiki</h1>
+        <!--
+          The one heading on the site that has to say what the software is rather than what
+          this page is. Somebody arriving from a search has not heard the name before, and
+          "The Quiblo wiki" answered a question only a returning reader was asking.
+        -->
+        <h1>Quiblo — a free, open source IPTV player for Android and Android TV</h1>
         <p class="page__summary">
-          Everything about a free, open-source Android IPTV client — what it is, what it
-          deliberately is not, how it is built, and what has been learned building it.
+          Plays Live TV, films and series from playlists <strong>you</strong> supply — an M3U
+          or M3U8 URL or file, or an Xtream Codes account. No ads, no accounts, no tracking,
+          no backend, and no server of ours anywhere in the path.
         </p>
       </header>
 
@@ -57,12 +64,27 @@ import { WIKI } from '../content';
           </li>
         </ul>
       </section>
+
+      <!--
+        On the page, not only in the structured data.
+        Search engines treat an answer given to them and withheld from the reader as a reason
+        to distrust the whole document, and they are right to — so these are one list, read
+        from one constant, and the two cannot drift apart.
+      -->
+      <section class="section" id="faq">
+        <h2>Common questions</h2>
+        @for (entry of faq; track entry.question) {
+          <h3>{{ entry.question }}</h3>
+          <p class="prose">{{ entry.answer }}</p>
+        }
+      </section>
     </article>
   `,
   styleUrl: './wiki-page.scss',
 })
 export class HomeComponent {
   protected readonly parts = WIKI;
+  protected readonly faq = FAQ;
   protected readonly packageCount = API.length;
   protected readonly types = typeCount();
 }
