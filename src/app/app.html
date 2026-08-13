@@ -13,7 +13,31 @@
   </button>
 
   <a class="topbar__brand" routerLink="/" (click)="closeNav()">
-    <span class="topbar__mark" aria-hidden="true">Q</span>
+    <!--
+      The app's own launcher icon, inline rather than an <img> so it takes the page's colour
+      and stays sharp at any density. The three paths are copied from ic_launcher_foreground
+      in the Android repository; `tools/brand.mjs` has the same three and the note about
+      keeping them together.
+
+      `currentColor` is what makes one copy work in both themes — a light tab strip and a dark
+      one want opposite inks, and this is the only file where that is free.
+    -->
+    <svg class="topbar__mark" viewBox="0 0 108 108" aria-hidden="true" focusable="false">
+      <path
+        d="M36,54 a18,18 0 1,0 36,0 a18,18 0 1,0 -36,0"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="5"
+      />
+      <path
+        d="M64,64 L74,74"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="5"
+        stroke-linecap="round"
+      />
+      <path d="M49,45 L49,63 L65,54 Z" fill="currentColor" />
+    </svg>
     <span>Quiblo <span class="topbar__brandMuted">wiki</span></span>
   </a>
 

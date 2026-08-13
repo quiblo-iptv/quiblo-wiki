@@ -56,16 +56,14 @@
   white-space: nowrap;
 }
 
+/*
+ * The mark is drawn edge to edge of its own 108 viewport, so it needs no plate behind it —
+ * the placeholder letter did, to look deliberate rather than dropped in.
+ */
 .topbar__mark {
-  display: grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  font-size: 0.9rem;
-  font-weight: 700;
+  width: 26px;
+  height: 26px;
   color: var(--accent);
-  background: var(--accent-soft);
-  border-radius: 8px;
 }
 
 .topbar__brandMuted {
