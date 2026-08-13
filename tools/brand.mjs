@@ -109,28 +109,52 @@ function mark({ solid = true, colour = ON_BRAND, radius = 0 } = {}) {
 function wordmark(width, height, { withTagline = true, centred = false } = {}) {
   const markSize = height * 0.52;
   const midY = (height - markSize) / 2;
-
-  // Measured by the widest line, since there is no text metric here to ask. DejaVu Sans Bold
-  // runs about 0.6 of its size per character, and the tagline about 0.5 — close enough to
-  // centre a lockup, and the error is a few pixels on a 1600-wide canvas.
-  const nameWidth = 'Quiblo'.length * height * 0.2 * 0.6;
-  const taglineWidth = withTagline
-    ? 'A free, open source IPTV player for Android and Android TV.'.length * height * 0.088 * 0.5
-    : 0;
-  const blockWidth = markSize + height * 0.16 + Math.max(nameWidth, taglineWidth);
-
-  const left = centred ? (width - blockWidth) / 2 : height * 0.28;
-  const textX = left + markSize + height * 0.16;
-
-  const tagline = withTagline
-    ? `<text x="${textX}" y="${height * 0.63}" font-family="DejaVu Sans, Verdana, sans-serif"
-             font-size="${height * 0.088}" fill="${MUTED_ON_BRAND}">A free, open source IPTV player for Android and Android TV.</text>`
-    : '';
+  const gap = height * 0.16;
+  const nameSize = height * 0.2;
 
   // The mark is scaled out of the safe zone here for the same reason as the plateless icon:
   // a banner crops nothing, so the launcher's reserved margin is only empty space.
   const zoom = 1.38;
   const inset = (108 - 108 * zoom) / 2;
+
+  /*
+   * How much of the mark's box carries paint.
+   *
+   * The artwork is drawn inside the adaptive-icon safe zone: only the middle 43 of its 108
+   * units are ever painted, and [zoom] pushes that out again. Centring on the box rather than
+   * on the ink put the lockup a dozen pixels right of the middle — small, and exactly the sort
+   * of small that reads as "not quite centred" without anyone being able to say why.
+   */
+  const inkWidth = markSize * (43 / 108) * zoom;
+
+  // Measured by the widest line, since there is no text metric here to ask. DejaVu Sans Bold
+  // runs about 0.6 of its size per character, and the tagline about 0.5 — close enough to
+  // centre a lockup, and the error is a few pixels on a 1600-wide canvas.
+  const nameWidth = 'Quiblo'.length * nameSize * 0.6;
+  const taglineWidth = withTagline
+    ? 'A free, open source IPTV player for Android and Android TV.'.length * height * 0.088 * 0.5
+    : 0;
+  const blockWidth = inkWidth + gap + Math.max(nameWidth, taglineWidth);
+
+  // Where the *ink* starts, and then the box placed so its ink lands there.
+  const leftInk = centred ? (width - blockWidth) / 2 : height * 0.28;
+  const left = leftInk - (markSize - inkWidth) / 2;
+  const textX = leftInk + inkWidth + gap;
+
+  /*
+   * The name's baseline, level with the mark beside it.
+   *
+   * With a tagline the two lines are a block and the pair straddles the middle. Alone, the name
+   * has to sit on the mark's own centre line — it was set at 0.46 of the height, which put its
+   * cap height a fifth of the picture above the middle of the circle next to it. Cap height in
+   * DejaVu Sans Bold is about 0.73 of the size.
+   */
+  const nameY = withTagline ? height * 0.46 : height / 2 + nameSize * 0.73 / 2;
+
+  const tagline = withTagline
+    ? `<text x="${textX}" y="${height * 0.63}" font-family="DejaVu Sans, Verdana, sans-serif"
+             font-size="${height * 0.088}" fill="${MUTED_ON_BRAND}">A free, open source IPTV player for Android and Android TV.</text>`
+    : '';
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
   <rect width="${width}" height="${height}" fill="${BRAND}"/>
@@ -139,8 +163,8 @@ function wordmark(width, height, { withTagline = true, centred = false } = {}) {
     <g transform="translate(${inset} ${inset}) scale(${zoom})">${FOREGROUND}</g>
   </g>
 
-  <text x="${textX}" y="${height * 0.46}" font-family="DejaVu Sans, Verdana, sans-serif"
-        font-size="${height * 0.2}" font-weight="bold" fill="${ON_BRAND}">Quiblo</text>
+  <text x="${textX}" y="${nameY}" font-family="DejaVu Sans, Verdana, sans-serif"
+        font-size="${nameSize}" font-weight="bold" fill="${ON_BRAND}">Quiblo</text>
   ${tagline}
 </svg>
 `;
@@ -189,7 +213,10 @@ console.log('Wordmark — anywhere wider than it is tall:');
 // Patreon's cover is 1600x400. Everything else that wants a banner wants roughly this shape.
 render(wordmark(1600, 400, { centred: true }), 'quiblo-patreon-cover-1600x400.png', 1600, 400);
 render(wordmark(1280, 320), 'quiblo-wordmark-1280x320.png', 1280, 320);
-render(wordmark(800, 200, { withTagline: false }), 'quiblo-wordmark-800x200.png', 800, 200);
+// Centred: this is the one the organisation profile shows, and a profile README centres its
+// own block — so a lockup sitting left inside the image reads as a banner that has slipped in
+// its frame rather than as a logo on a plate.
+render(wordmark(800, 200, { withTagline: false, centred: true }), 'quiblo-wordmark-800x200.png', 800, 200);
 
 /*
  * The favicon browsers still ask for by name, with the three sizes they pick between.
