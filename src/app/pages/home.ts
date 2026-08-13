@@ -23,6 +23,28 @@ import { FAQ } from '../core/structured-data';
           or M3U8 URL or file, or an Xtream Codes account. No ads, no accounts, no tracking,
           no backend, and no server of ours anywhere in the path.
         </p>
+
+        <!--
+          Three links, and only the first is an ask of the reader's time. Download leads
+          because somebody who has just read one sentence about a player wants the player;
+          the two funding links follow because a page that asks for money before it has given
+          anything is a page people close.
+        -->
+        <div class="actions">
+          <a
+            class="actions__button actions__button--primary"
+            href="https://github.com/quiblo-iptv/quiblo-app/releases/latest"
+            rel="noopener"
+          >
+            Download from GitHub
+          </a>
+          <a class="actions__button" href="https://github.com/sponsors/quiblo-iptv" rel="noopener">
+            Sponsor on GitHub
+          </a>
+          <a class="actions__button" href="https://www.patreon.com/c/Quiblo" rel="noopener">
+            Support on Patreon
+          </a>
+        </div>
       </header>
 
       <p class="prose">

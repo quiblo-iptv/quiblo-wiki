@@ -186,3 +186,50 @@
     margin-left: 0;
   }
 }
+
+/* --- the front page's three links --------------------------------------- */
+
+/*
+ * Wraps rather than scrolls, and the buttons keep a hand-sized target on a phone. The
+ * primary is filled and the other two are outlined: three equal buttons is three decisions
+ * for the reader, and only one of them is the one they came to make.
+ */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 1.6rem;
+}
+
+.actions__button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0.55rem 1.15rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.actions__button:hover,
+.actions__button:focus-visible {
+  border-color: var(--accent);
+  background: var(--bg);
+}
+
+.actions__button--primary {
+  color: var(--bg);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.actions__button--primary:hover,
+.actions__button--primary:focus-visible {
+  background: var(--accent);
+  filter: brightness(1.08);
+}
