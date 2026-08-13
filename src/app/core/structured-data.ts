@@ -89,7 +89,14 @@ export function siteGraph(): unknown {
         url: SITE_ORIGIN,
         logo: SOCIAL_IMAGE,
         description: SITE_DESCRIPTION,
-        sameAs: [REPOSITORY, 'https://github.com/quiblo-iptv'],
+        // The front door is the canonical Organization; this one points at it so the two are
+        // read as the same publisher rather than as two outfits with one name.
+        sameAs: [
+          'https://quiblo-iptv.github.io/',
+          REPOSITORY,
+          'https://github.com/quiblo-iptv',
+          'https://www.patreon.com/c/Quiblo',
+        ],
       },
       {
         '@type': 'WebSite',
