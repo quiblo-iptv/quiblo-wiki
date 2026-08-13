@@ -24,7 +24,7 @@
  */
 
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, writeFileSync, unlinkSync, existsSync } from 'node:fs';
+import { copyFileSync, mkdirSync, readdirSync, writeFileSync, unlinkSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 const OUT = 'brand';
@@ -211,4 +211,21 @@ try {
   console.warn('  favicon.ico skipped — ImageMagick not found');
 }
 
-console.log(`\nWritten to ${OUT}/`);
+/*
+ * Copied where the web can reach them, because a README cannot show a file that only exists on
+ * somebody's laptop.
+ *
+ * **Everything, not a chosen few.** The first pass published three files by hand and the next
+ * person to write a README naturally reached for a fourth — which 404'd. A generator that
+ * decides for the reader which of its outputs are usable is a generator that will be wrong.
+ */
+const PUBLIC = join('public', 'brand');
+mkdirSync(PUBLIC, { recursive: true });
+let published = 0;
+for (const file of readdirSync(OUT)) {
+  if (file.endsWith('.png') || file.endsWith('.ico')) {
+    copyFileSync(join(OUT, file), join(PUBLIC, file));
+    published += 1;
+  }
+}
+console.log(`\nWritten to ${OUT}/, and ${published} files copied to ${PUBLIC}/`);
