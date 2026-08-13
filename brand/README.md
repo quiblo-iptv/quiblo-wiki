@@ -10,11 +10,16 @@ node tools/brand.mjs
 
 ## The mark
 
-A Q that is also a play button: a ring for the letter's bowl, a triangle in the counter for
-what the software does, a short bar across the lower right for the tail. There is no fine
-detail in it anywhere, because it has to survive being 16 pixels wide in a browser tab.
+**It is the app's launcher icon, coordinate for coordinate.** The three paths come from
+`app/src/main/res/drawable/ic_launcher_foreground.xml` in the Android repository, in that
+drawable's own 108x108 viewport, so they can be compared with the XML line by line rather than
+trusted. **If the app's icon changes, change those three paths here and nothing else moves.**
 
-Colours: ink `#0d1117`, accent `#3ddc84`, text `#e6edf3`, muted `#8b949e`.
+A Q that is also a play button: the ring reads as the letter, the triangle as a player, the
+tail finishes the Q.
+
+Colours: brand `#4A4FBF` — which is `ic_launcher_background` and `tv_banner_background`, the
+same value in both applications — on white.
 
 ## What to use where
 
@@ -23,11 +28,12 @@ Colours: ink `#0d1117`, accent `#3ddc84`, text `#e6edf3`, muted `#8b949e`.
 | `quiblo-icon-1024.png` | GitHub organisation avatar, Patreon profile picture |
 | `quiblo-icon-512.png` | App listing, Play Store, anywhere asking for a 512 icon |
 | `quiblo-icon-256.png` / `-192` / `-128` / `-64` | Smaller square slots |
-| `quiblo-mark-512.png` and smaller | The mark with **no background**, for a page whose colour it does not control |
+| `quiblo-mark-512.png` and smaller | The mark with **no background, in indigo** — for light pages |
+| `quiblo-mark-white-512.png` and smaller | The same with **no background, in white** — for dark pages |
 | `quiblo-patreon-cover-1600x400.png` | Patreon cover. Centred deliberately — a banner is cropped to its middle on a phone |
 | `quiblo-wordmark-1280x320.png` | Any banner slot with the tagline |
 | `quiblo-wordmark-800x200.png` | Any banner slot without it |
-| `favicon.ico` | Copied into `public/`. 16, 32 and 64 in one file |
+| `favicon.ico` | Copied into `public/`. 16, 32 and 64 in one file, **plated** — a tab strip is white in one theme and near-black in the other, and a browser gives you no way to serve a different icon to each |
 
 The 1200x630 social card is a different picture with a different job and lives in
 [`tools/og-image.mjs`](../tools/og-image.mjs).

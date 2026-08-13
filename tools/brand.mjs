@@ -1,17 +1,21 @@
 #!/usr/bin/env node
 /**
- * Draws every Quiblo mark, at every size anything asks for, from one definition.
+ * Draws every Quiblo mark, at every size anything asks for, from the app's own icon.
  *
- * There was no icon. The organisation, the wiki, the app listing and the Patreon page each
- * wanted one, and the way that normally goes is four slightly different pictures — a logo
- * exported once at the wrong size, then cropped by hand for the next place that needs it. So
- * the shape lives here as geometry and every file below is rendered from it.
+ * The organisation, the wiki, the app listing and the Patreon page each want a picture, and
+ * the way that normally goes is four slightly different ones — a logo exported once at the
+ * wrong size, then cropped by hand for the next place that needs it. So the shape lives here
+ * as geometry and every file below is rendered from it.
  *
- * **The mark is a Q that is also a play button**, which is the whole idea: a ring for the
- * letter's bowl, a triangle in the counter for what the software does, and a short bar across
- * the lower right for the tail. It has to survive being 16 pixels wide in a browser tab, so
- * there is no fine detail anywhere in it — at that size a ring and a triangle is all that
- * survives, and anything else is mud.
+ * **The geometry is copied from `ic_launcher_foreground.xml`, coordinate for coordinate**, and
+ * that is the whole point of this file. The launcher icon is the one people already have on
+ * their home screen; anything drawn "in the same spirit" is a second logo, and two logos is
+ * how a project ends up looking like two projects. The Android drawable is authored in a
+ * 108x108 viewport, so that viewport is what is used here rather than a redrawn one — if the
+ * app's icon changes, change these three paths to match and nothing else has to move.
+ *
+ * A Q that is also a play button: the ring reads as the letter, the triangle as a player, and
+ * the tail finishes the Q. White on `#4A4FBF`, exactly as the app has it.
  *
  * Rendered with `rsvg-convert` rather than a headless browser: this is flat vector art, a
  * browser would have to be installed to draw it, and the pixels come out the same.
@@ -25,42 +29,59 @@ import { join } from 'node:path';
 
 const OUT = 'brand';
 
-/* The palette, and the only place it is written down. */
-const INK = '#0d1117';
-const ACCENT = '#3ddc84';
-const TEXT = '#e6edf3';
-const MUTED = '#8b949e';
+/*
+ * The app's own two colours, and nowhere else are they written down on this side.
+ * `BRAND` is `ic_launcher_background` and `tv_banner_background`, which are the same value in
+ * both applications.
+ */
+const BRAND = '#4A4FBF';
+const ON_BRAND = '#FFFFFF';
+const MUTED_ON_BRAND = '#c9cbf0';
 
 /**
- * The mark on its own, on a transparent ground, in a 512 box.
+ * The three paths from `ic_launcher_foreground.xml`, unchanged.
  *
- * [solid] fills the rounded square behind it. An app icon and an organisation avatar both need
- * that; a favicon on a page that may be light or dark needs the mark alone, so it is a switch
- * rather than two drawings that will drift.
+ * In the drawable's own 108x108 coordinates, so they can be compared with the XML line by line
+ * rather than trusted. Everything that needs them at another size wraps them in a transform.
  */
-function mark({ solid = true, ink = INK, accent = ACCENT } = {}) {
-  const plate = solid
-    ? `<rect width="512" height="512" rx="112" fill="${ink}"/>
-       <rect width="512" height="512" rx="112" fill="url(#sheen)"/>`
-    : '';
+const foreground = (colour) => `
+  <!-- The ring: the body of the Q. -->
+  <path d="M36,54 a18,18 0 1,0 36,0 a18,18 0 1,0 -36,0"
+        fill="none" stroke="${colour}" stroke-width="5"/>
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <defs>
-    <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="${accent}" stop-opacity="0.16"/>
-      <stop offset="65%" stop-color="${accent}" stop-opacity="0"/>
-    </linearGradient>
-  </defs>
+  <!-- The tail, breaking the ring at the lower right. -->
+  <path d="M64,64 L74,74"
+        fill="none" stroke="${colour}" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- The play mark. -->
+  <path d="M49,45 L49,63 L65,54 Z" fill="${colour}"/>
+`;
+
+const FOREGROUND = foreground(ON_BRAND);
+
+/**
+ * The icon in a 512 box.
+ *
+ * [solid] fills the plate behind it. An app icon and an organisation avatar both need that; a
+ * favicon on a page whose colour it does not control needs the mark alone, so it is a switch
+ * rather than two drawings that will drift.
+ *
+ * **The foreground is scaled up when there is no plate.** An adaptive icon reserves the outer
+ * third for the launcher to crop, so the drawable only fills the middle 66 of its 108 — which
+ * is correct on a home screen and looks like a mistake in a browser tab, where nothing is
+ * going to crop it.
+ */
+function mark({ solid = true, colour = ON_BRAND } = {}) {
+  const plate = solid ? `<rect width="108" height="108" rx="24" fill="${BRAND}"/>` : '';
+
+  // 1.0 inside a plate, so it matches the launcher exactly. 1.38 without one, which brings the
+  // 66-unit safe zone out to fill the frame.
+  const zoom = solid ? 1 : 1.38;
+  const offset = (108 - 108 * zoom) / 2;
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 108 108">
   ${plate}
-
-  <!-- The bowl of the Q. Stroked rather than filled so the triangle inside has room to read. -->
-  <circle cx="256" cy="248" r="132" fill="none" stroke="${accent}" stroke-width="40"/>
-
-  <!-- The play triangle, optically centred: a triangle's visual centre sits left of its box. -->
-  <path d="M222 190 L222 306 L318 248 Z" fill="${accent}"/>
-
-  <!-- The tail. Square-capped and thick, because a thin tail is the first thing to vanish. -->
-  <path d="M330 322 L392 384" stroke="${accent}" stroke-width="44" stroke-linecap="square"/>
+  <g transform="translate(${offset} ${offset}) scale(${zoom})">${foreground(colour)}</g>
 </svg>
 `;
 }
@@ -74,8 +95,7 @@ function mark({ solid = true, ink = INK, accent = ACCENT } = {}) {
  * a wordmark belongs.
  */
 function wordmark(width, height, { withTagline = true, centred = false } = {}) {
-  const scale = height / 512;
-  const markSize = 512 * scale * 0.52;
+  const markSize = height * 0.52;
   const midY = (height - markSize) / 2;
 
   // Measured by the widest line, since there is no text metric here to ask. DejaVu Sans Bold
@@ -92,31 +112,24 @@ function wordmark(width, height, { withTagline = true, centred = false } = {}) {
 
   const tagline = withTagline
     ? `<text x="${textX}" y="${height * 0.63}" font-family="DejaVu Sans, Verdana, sans-serif"
-             font-size="${height * 0.088}" fill="${MUTED}">A free, open source IPTV player for Android and Android TV.</text>`
+             font-size="${height * 0.088}" fill="${MUTED_ON_BRAND}">A free, open source IPTV player for Android and Android TV.</text>`
     : '';
 
+  // The mark is scaled out of the safe zone here for the same reason as the plateless icon:
+  // a banner crops nothing, so the launcher's reserved margin is only empty space.
+  const zoom = 1.38;
+  const inset = (108 - 108 * zoom) / 2;
+
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-  <defs>
-    <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="${ACCENT}" stop-opacity="0.16"/>
-      <stop offset="70%" stop-color="${ACCENT}" stop-opacity="0"/>
-    </linearGradient>
-  </defs>
+  <rect width="${width}" height="${height}" fill="${BRAND}"/>
 
-  <rect width="${width}" height="${height}" fill="${INK}"/>
-  <rect width="${width}" height="${height}" fill="url(#sheen)"/>
-
-  <g transform="translate(${left}, ${midY}) scale(${markSize / 512})">
-    <circle cx="256" cy="248" r="132" fill="none" stroke="${ACCENT}" stroke-width="40"/>
-    <path d="M222 190 L222 306 L318 248 Z" fill="${ACCENT}"/>
-    <path d="M330 322 L392 384" stroke="${ACCENT}" stroke-width="44" stroke-linecap="square"/>
+  <g transform="translate(${left}, ${midY}) scale(${markSize / 108})">
+    <g transform="translate(${inset} ${inset}) scale(${zoom})">${FOREGROUND}</g>
   </g>
 
   <text x="${textX}" y="${height * 0.46}" font-family="DejaVu Sans, Verdana, sans-serif"
-        font-size="${height * 0.2}" font-weight="bold" fill="${TEXT}">Quiblo</text>
+        font-size="${height * 0.2}" font-weight="bold" fill="${ON_BRAND}">Quiblo</text>
   ${tagline}
-
-  <rect x="0" y="${height - 6}" width="${width}" height="6" fill="${ACCENT}" opacity="0.55"/>
 </svg>
 `;
 }
@@ -136,9 +149,22 @@ for (const size of [1024, 512, 256, 192, 128, 64]) {
   render(mark(), `quiblo-icon-${size}.png`, size, size);
 }
 
-console.log('Icon — transparent ground, for a page whose colour it does not control:');
+/*
+ * The mark with no plate, in two colours, because one is not enough.
+ *
+ * A white mark on a transparent ground is invisible on anything white — which is a browser
+ * tab, a light README, and most of the places a transparent logo gets dropped. The first pass
+ * here shipped only the white one and the 32-pixel favicon came out blank. So the indigo one
+ * is the default and carries the plain name, and the white one is for dark grounds only.
+ */
+console.log('Mark — transparent ground, indigo, for light backgrounds:');
 for (const size of [512, 180, 64, 32, 16]) {
-  render(mark({ solid: false }), `quiblo-mark-${size}.png`, size, size);
+  render(mark({ solid: false, colour: BRAND }), `quiblo-mark-${size}.png`, size, size);
+}
+
+console.log('Mark — transparent ground, white, for dark backgrounds:');
+for (const size of [512, 180, 64]) {
+  render(mark({ solid: false }), `quiblo-mark-white-${size}.png`, size, size);
 }
 
 console.log('Wordmark — anywhere wider than it is tall:');
@@ -147,15 +173,22 @@ render(wordmark(1600, 400, { centred: true }), 'quiblo-patreon-cover-1600x400.pn
 render(wordmark(1280, 320), 'quiblo-wordmark-1280x320.png', 1280, 320);
 render(wordmark(800, 200, { withTagline: false }), 'quiblo-wordmark-800x200.png', 800, 200);
 
-// The favicon browsers still ask for by name, with the three sizes they pick between.
+/*
+ * The favicon browsers still ask for by name, with the three sizes they pick between.
+ *
+ * Built from the **plated** icon rather than the transparent mark, deliberately. A tab strip
+ * is white in one theme and near-black in the other, and a browser gives you no way to serve
+ * a different favicon to each — so the only icon that is visible in both is one that brings
+ * its own background. It is also the picture already on people's home screens.
+ */
 try {
   execFileSync('magick', [
-    join(OUT, 'quiblo-mark-16.png'),
-    join(OUT, 'quiblo-mark-32.png'),
-    join(OUT, 'quiblo-mark-64.png'),
+    join(OUT, 'quiblo-icon-64.png'),
+    '-define',
+    'icon:auto-resize=64,32,16',
     join(OUT, 'favicon.ico'),
   ]);
-  console.log('  favicon.ico  16 + 32 + 64');
+  console.log('  favicon.ico  16 + 32 + 64, plated');
 } catch {
   console.warn('  favicon.ico skipped — ImageMagick not found');
 }

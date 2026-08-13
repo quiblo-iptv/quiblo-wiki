@@ -23,29 +23,32 @@ const PNG = join(OUT_DIR, 'og-image.png');
 const TMP = join(OUT_DIR, '.og-image.svg');
 
 /*
- * Dark, because the site is dark by default and a card that does not match the page it opens
- * reads as somebody else's link. The green is the one the README's badges already use.
+ * The app's own two colours, and the app's own mark, so a link preview and the icon on
+ * somebody's home screen are recognisably the same thing. A card drawn in a palette the
+ * software does not use reads as somebody else's link.
  */
-const BACKGROUND = '#0d1117';
-const PANEL = '#161b22';
-const ACCENT = '#3ddc84';
-const TEXT = '#e6edf3';
-const MUTED = '#8b949e';
+const BACKGROUND = '#4A4FBF';
+const ACCENT = '#FFFFFF';
+const TEXT = '#FFFFFF';
+const MUTED = '#c9cbf0';
 
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
-    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="${ACCENT}" stop-opacity="0.18"/>
-      <stop offset="60%" stop-color="${ACCENT}" stop-opacity="0"/>
-    </linearGradient>
   </defs>
 
   <rect width="1200" height="630" fill="${BACKGROUND}"/>
-  <rect width="1200" height="630" fill="url(#glow)"/>
+  
 
-  <!-- A play triangle in a rounded square: the one mark that says "player" without a word. -->
-  <rect x="88" y="140" width="132" height="132" rx="30" fill="${PANEL}" stroke="${ACCENT}" stroke-width="3"/>
-  <path d="M138 178 L138 234 L186 206 Z" fill="${ACCENT}"/>
+  <!--
+    The launcher icon's own three paths, from ic_launcher_foreground.xml, in its 108 viewport
+    and scaled into place. Copied rather than redrawn — two logos is how a project comes to
+    look like two projects.
+  -->
+  <g transform="translate(88 128) scale(1.65)">
+    <path d="M36,54 a18,18 0 1,0 36,0 a18,18 0 1,0 -36,0" fill="none" stroke="${ACCENT}" stroke-width="5"/>
+    <path d="M64,64 L74,74" fill="none" stroke="${ACCENT}" stroke-width="5" stroke-linecap="round"/>
+    <path d="M49,45 L49,63 L65,54 Z" fill="${ACCENT}"/>
+  </g>
 
   <text x="256" y="232" font-family="DejaVu Sans, Verdana, sans-serif" font-size="104" font-weight="bold" fill="${TEXT}">Quiblo</text>
 
@@ -55,7 +58,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" v
   <text x="88" y="502" font-family="DejaVu Sans, Verdana, sans-serif" font-size="32" fill="${MUTED}">Bring your own M3U or Xtream playlist.</text>
   <text x="88" y="548" font-family="DejaVu Sans, Verdana, sans-serif" font-size="32" fill="${MUTED}">No ads. No accounts. No tracking. No backend.</text>
 
-  <rect x="88" y="586" width="1024" height="4" rx="2" fill="${ACCENT}" opacity="0.5"/>
+  
 </svg>
 `;
 
