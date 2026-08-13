@@ -387,7 +387,7 @@ present and inert.</p>
       slug: 'television',
       title: 'The television app',
       summary:
-        'A ten-foot interface driven by a remote: the focus model, the key maps, and what differs from the phone.',
+        'A ten-foot interface driven by a remote: the focus model, the key maps, the player, and what differs from the phone.',
       sections: [
         {
           id: 'shape',
@@ -446,12 +446,12 @@ testable function rather than buried in a modifier.</p>
 </table>
 <p>Back resting on Search rather than on Live is deliberate: a viewer pressing Back repeatedly
 is trying to leave, and each press should visibly get closer to it rather than cycling.</p>
-<h4>In the player</h4>
+<h4>In the player, with nothing on screen</h4>
 <table>
   <thead><tr><th>Key</th><th>Live</th><th>Film or episode</th></tr></thead>
   <tbody>
     <tr><td>Centre / Enter / Play-Pause</td><td colspan="2">Play or pause</td></tr>
-    <tr><td>Down</td><td colspan="2">Show controls</td></tr>
+    <tr><td>Down</td><td colspan="2">Show the controls</td></tr>
     <tr><td>Left / Right</td><td>— (seeking is meaningless)</td><td>Skip by the configured interval</td></tr>
     <tr><td>Up / Channel-Up / Channel-Down</td><td>Zap through the list you came from</td><td>— (the next film is not "the next channel")</td></tr>
     <tr><td>Back</td><td colspan="2">Close the controls first, leave playback second</td></tr>
@@ -459,7 +459,70 @@ is trying to leave, and each press should visibly get closer to it rather than c
 </table>
 <p>Where a key does nothing, it is left <em>unhandled</em> rather than swallowed, so it falls
 through to the system instead of being absorbed by a player that has nothing to do with
-it.</p>`,
+it.</p>
+<p><strong>With the controls on screen, the arrows belong to them</strong> — see
+<a href="/wiki/television#player">the player</a> below. The keys that are not arrows keep
+working either way, because a remote's play key means one thing wherever you are looking.</p>`,
+        },
+
+        {
+          id: 'player',
+          title: 'The player',
+          html: `
+<p>Press <strong>down</strong> and the controls appear: play or pause in the middle of the
+screen, the two skips either side of it, and — on an episode — the previous and next episode
+outside those. Press <strong>down</strong> again for the row underneath: subtitles, audio and
+picture fit. The D-pad walks between them and the centre button presses them.</p>
+<p>They go away after six seconds without a press, counted from the last press rather than from
+when they opened, because they are something to navigate rather than something to read.</p>
+<h4>Two ways in, not one</h4>
+<p><strong>The remote's own keys still drive playback with nothing on screen.</strong> That is
+the fastest way to pause something and there was never a reason to take it away. The buttons
+exist because the keys ran out: a remote has keys for about five things, and everything past
+those five was arriving through a key that already meant something else — subtitles on a
+<em>second</em> press of Down, picture fit on Up, on a film, where zapping happened not to be
+using it.</p>
+<p>The rule that keeps the two from fighting is a single one: <strong>while the controls are on
+screen, the arrows belong to focus and the player answers none of them</strong>. An arrow the
+player claims is an arrow focus never sees, and the result would be every button drawn, correct,
+and impossible to reach — which is the same fault as a feature with no way in, arrived at from
+the other direction.</p>
+<h4>Which way each arrow goes is written down</h4>
+<p>Compose finds a focus target in a direction by looking at where things are, and the two rows
+barely line up: the transport is centred and the options sit against the left margin. Left to
+geometry, down from the play button landed on <em>picture fit</em> — the last button of the row
+below, because it was the one nearest beneath the middle of the screen — and right off the end
+of the options row jumped back up to the previous-episode button. Every button now carries its
+own four directions, and the ends of each row refuse to wrap.</p>
+<p>That was measured rather than argued: a test walks the whole thing with key events at the
+panel's real geometry, which is the only way this project has ever found an unreachable
+control.</p>`,
+        },
+
+        {
+          id: 'episodes',
+          title: 'One episode after another',
+          html: `
+<p>A series travels with the request into the player, so the two outer buttons move along it.
+There is no previous button on the first episode and no next on the last.</p>
+<p>When an episode ends, a banner slides in at the top right counting down to the next one, with
+<strong>Stop</strong> and <strong>Play now</strong> under it. The remote lands on Play now, so
+carrying on is one press and reading the credits is two. The count is set under
+<a href="/wiki/settings-reference#playback">Settings → Playback</a>, from three seconds to
+fifteen, or off — off still offers the next episode and waits for you to choose it. Pressing
+back leaves the player and cancels it.</p>
+<h4>Two decisions worth stating</h4>
+<p><strong>"Next" means next in broadcast order, whatever order the list is sorted in.</strong>
+A season shown newest first puts the <em>previous</em> episode in the row below the one playing,
+and the order things are watched in is not a display preference.</p>
+<p><strong>It does not wrap, and channel zapping does.</strong> A channel list is a ring you
+walk round; a series is a thing that finishes. Rolling off the finale into the first episode
+would restart a series somebody has just finished — unattended, from a countdown, with nobody
+in the room.</p>
+<p>The banner is the closest thing this app puts on a television to a modal, and it is
+deliberately not one: playback has already stopped so nothing is covered, it takes a corner
+rather than the middle, it cannot be arrived at by accident, and both ways out are on screen at
+once.</p>`,
         },
         {
           id: 'guide',
@@ -570,10 +633,15 @@ remote's own hardware keys or nothing at all.</p>
     <tr><td>Skip interval</td><td>5, 10, 15, 30 seconds</td><td>How far the skip controls move, on both apps</td></tr>
     <tr><td>Buffering</td><td>Low, Balanced, High</td><td>How much the player buffers ahead. Low starts faster and is more fragile on a poor connection; High is the reverse</td></tr>
     <tr><td>Maximum quality</td><td>Unlimited, 8, 4, 2 Mbps</td><td>Caps the bitrate the player will select on an adaptive stream. Useful on metered or slow connections</td></tr>
+    <tr><td>Start the next episode after <em>(television)</em></td><td>Off, 3, 5, 10, 15 seconds</td><td>How long the <a href="/wiki/television#episodes">end-of-episode banner</a> counts down before starting the next one. Off still offers it and waits for you to choose</td></tr>
   </tbody>
 </table>
-<p>All three are stored in DataStore and read by the player as a flow, so a change applies
-without a restart.</p>`,
+<p>All of them are stored in DataStore and read by the player as a flow, so a change applies
+without a restart.</p>
+<p>The last is on the television only, because only the television player moves between episodes
+so far. A setting shown on an app it does not affect is the thing
+<a href="/wiki/what-we-learned#audit">the feature audit</a> taught us to remove, so it stays off
+the phone until the phone can honour it.</p>`,
         },
         {
           id: 'appearance',

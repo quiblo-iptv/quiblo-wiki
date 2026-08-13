@@ -194,8 +194,46 @@ mistake.</p>`,
         members: [
           { name: 'Live', summary: 'Carries the queue it was chosen from, because zapping needs it and the player cannot know it.' },
           { name: 'Film', summary: 'Carries a nullable start position — null resumes, zero restarts.' },
-          { name: 'Episode', summary: "Carries the stream URL and the numbering, neither of which is derivable from the series row." },
+          { name: 'Episode', summary: "Carries the stream URL and the numbering, neither of which is derivable from the series row, plus the whole run of the series and where this episode sits in it." },
           { name: 'zappedBy(direction)', summary: 'The channel that many steps away, wrapping. Live only.' },
+          { name: 'steppedBy(direction)', summary: 'The neighbouring episode, or null at either end. It does not wrap — a channel list is a ring, a series is a thing that finishes.' },
+          { name: 'hasNext / hasPrevious', summary: 'Whether there is an episode either side, so the player draws a button only where one leads somewhere.' },
+        ],
+      },
+      {
+        name: 'TvPlayerControls',
+        kind: 'class',
+        summary: 'The player as focusable buttons: play in the middle, seeks either side, episode steps outside those, and options underneath.',
+        detail: `
+<p>It replaced a readout. The remote's own keys still drive playback with nothing on screen —
+that is the fastest way to pause something — but a remote has keys for about five things, and
+every feature past those five was arriving on a key that already meant something else.</p>
+<p><strong>Each button carries its own four directions.</strong> Compose finds a focus target by
+looking at where things are, and the two rows barely line up: left to geometry, down from the
+play button landed on the options row's <em>last</em> button, and right off the end of that row
+jumped back up to the transport. Measured with a D-pad walk at the panel's real geometry, not
+argued.</p>
+<p>Nothing changes size on focus. A focused control that grows reports a rectangle that moves
+every frame while the animation runs, and that has already cost this project four wrong answers
+about a shaking catalogue.</p>`,
+        members: [
+          { name: 'TvControlsState', summary: 'Everything the controls draw from — one value rather than a dozen parameters that stopped saying which is which.' },
+          { name: 'TvControlActions', summary: 'What the buttons do. The screen supplies them; this file only decides where they sit.' },
+        ],
+      },
+      {
+        name: 'TvNextEpisodeBanner',
+        kind: 'class',
+        summary: 'The end of an episode, and the offer of the next one on a countdown.',
+        detail: `
+<p>It slides in from the right because it arrives on its own: something appearing unasked has to
+be seen arriving, or a viewer looks up at a countdown already at two with no idea what started
+it. Focus lands on <em>Play now</em>, so carrying on is one press.</p>
+<p>The closest thing this app puts on a television to a modal, and deliberately not one —
+playback has already stopped so nothing is covered, it takes a corner rather than the middle,
+it cannot be arrived at by accident, and both ways out are on screen at once.</p>`,
+        members: [
+          { name: 'shouldOfferNextEpisode(request, status, isDismissed)', summary: 'When the offer appears. A plain function, because every mistake it can make is silent — offering one for a film, at the end of a series, again after a refusal, or after a failure rather than an ending.' },
         ],
       },
       {

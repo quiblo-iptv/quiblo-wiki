@@ -123,16 +123,19 @@ programme is a list of one thing. That collapsing happens in
       {
         name: 'PlayerSettings',
         kind: 'data class',
-        summary: 'Skip interval, buffer mode and bitrate cap, as one object.',
+        summary: 'Skip interval, buffer mode, bitrate cap and the next-episode delay, as one object.',
       },
       {
-        name: 'SeekInterval / BufferMode / MaxBitrateCap / AspectRatioMode',
+        name: 'SeekInterval / BufferMode / MaxBitrateCap / AspectRatioMode / AutoNextDelay',
         kind: 'enum',
         summary: 'The player settings, as closed sets rather than free numbers.',
         detail: `
 <p>They live in <code>:core:model</code> rather than <code>:core:media</code> deliberately, so
 the settings store and the settings screen can name them without either depending on the
-media layer.</p>`,
+media layer.</p>
+<p><code>AutoNextDelay</code> carries <code>OFF</code> as one of its values rather than sitting
+behind a separate switch: "do not do this" and "do it after ten seconds" are the same question
+asked once. Off still offers the next episode; what stops is the counting.</p>`,
       },
       {
         name: 'Appearance / ThemeMode',
