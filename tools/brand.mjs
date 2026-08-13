@@ -71,8 +71,20 @@ const FOREGROUND = foreground(ON_BRAND);
  * is correct on a home screen and looks like a mistake in a browser tab, where nothing is
  * going to crop it.
  */
-function mark({ solid = true, colour = ON_BRAND } = {}) {
-  const plate = solid ? `<rect width="108" height="108" rx="24" fill="${BRAND}"/>` : '';
+function mark({ solid = true, colour = ON_BRAND, radius = 0 } = {}) {
+  /*
+   * The plate is a **flat square by default, and that is the fix for a real artefact.**
+   *
+   * It was exported with rounded corners, which leaves the four corners transparent. Every
+   * place this icon goes then rounds it again — GitHub masks an avatar, a launcher masks an
+   * adaptive icon, Patreon masks a profile picture — and the page's own background shows
+   * through the gap between the two radii as four grey notches.
+   *
+   * So the export is square and whoever displays it does the rounding, which is the one
+   * arrangement that cannot disagree with itself. `radius` is there for the rare slot that
+   * masks nothing and wants the corners drawn in.
+   */
+  const plate = solid ? `<rect width="108" height="108" rx="${radius}" fill="${BRAND}"/>` : '';
 
   // 1.0 inside a plate, so it matches the launcher exactly. 1.38 without one, which brings the
   // 66-unit safe zone out to fill the frame.
@@ -144,9 +156,15 @@ function render(svg, file, width, height) {
 
 if (!existsSync(OUT)) mkdirSync(OUT, { recursive: true });
 
-console.log('Icon — square, filled. Organisation avatar, app listing, Patreon profile:');
+console.log('Icon — flat square. Organisation avatar, app listing, Patreon profile:');
 for (const size of [1024, 512, 256, 192, 128, 64]) {
   render(mark(), `quiblo-icon-${size}.png`, size, size);
+}
+
+// For the occasional slot that masks nothing and would otherwise show a hard square.
+console.log('Icon — corners drawn in, for a slot that does no masking of its own:');
+for (const size of [512, 256]) {
+  render(mark({ radius: 24 }), `quiblo-icon-rounded-${size}.png`, size, size);
 }
 
 /*

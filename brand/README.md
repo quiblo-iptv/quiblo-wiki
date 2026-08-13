@@ -26,6 +26,7 @@ same value in both applications — on white.
 | File | Where it goes |
 | :---- | :---- |
 | `quiblo-icon-1024.png` | GitHub organisation avatar, Patreon profile picture |
+| `quiblo-icon-rounded-512.png` | Only for a slot that does **no** masking of its own — see the note below |
 | `quiblo-icon-512.png` | App listing, Play Store, anywhere asking for a 512 icon |
 | `quiblo-icon-256.png` / `-192` / `-128` / `-64` | Smaller square slots |
 | `quiblo-mark-512.png` and smaller | The mark with **no background, in indigo** — for light pages |
@@ -35,5 +36,19 @@ same value in both applications — on white.
 | `quiblo-wordmark-800x200.png` | Any banner slot without it |
 | `favicon.ico` | Copied into `public/`. 16, 32 and 64 in one file, **plated** — a tab strip is white in one theme and near-black in the other, and a browser gives you no way to serve a different icon to each |
 
-The 1200x630 social card is a different picture with a different job and lives in
-[`tools/og-image.mjs`](../tools/og-image.mjs).
+## Why the icons are flat squares
+
+They were exported with rounded corners, which leaves the four corners transparent. Every place
+this icon goes then rounds it **again** — GitHub masks an avatar, a launcher masks an adaptive
+icon, Patreon masks a profile picture — and the page's own background shows through the gap
+between the two radii as four grey notches.
+
+So the export is square and whoever displays it does the rounding. That is the one arrangement
+that cannot disagree with itself. The `-rounded-` files exist for the rare slot that masks
+nothing and would otherwise show a hard square; if you are unsure which you need, use the flat
+one, because being masked twice is invisible and being masked never is not.
+
+## The social card
+
+A different picture with a different job — 1200x630, for link previews. It lives in
+[`tools/og-image.mjs`](../tools/og-image.mjs) and is written straight to `public/`.
