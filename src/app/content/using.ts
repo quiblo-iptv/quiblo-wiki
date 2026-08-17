@@ -1,4 +1,5 @@
 import type { WikiPart } from '../core/wiki.model';
+import { RELEASE_NOTES } from './release-notes';
 
 export const USING: WikiPart = {
   id: 'using',
@@ -18,8 +19,11 @@ export const USING: WikiPart = {
           html: `
 <p>Every release is published on
 <a href="https://github.com/quiblo-iptv/quiblo-app/releases">GitHub Releases</a>. There is no
-store listing, and the app never checks for updates — it has no server of ours to ask. New
-versions are something you come and get.</p>
+store listing. New versions are something you come and get — with one exception, added in the
+current alpha: the <strong>television</strong> app's Settings has a <em>Check now</em> button that
+reads this page and can fetch the newer APK for you. It runs when you press it and at no other
+time, and it verifies the published checksum before offering to install anything. The phone app
+still never checks. See <a href="/wiki/release-notes#alpha">Release notes</a>.</p>
 <p>Each release carries four files: two APKs, and a <code>.sha256</code> beside each.</p>`,
         },
         {
@@ -96,6 +100,9 @@ that is the first thing to check.</p>`,
         },
       ],
     },
+    // Straight after Downloads: somebody who has just fetched an APK wants to know what is in
+    // it. Its own file, because this page gains a section on every release.
+    RELEASE_NOTES,
     {
       slug: 'getting-started',
       title: 'Getting started',
