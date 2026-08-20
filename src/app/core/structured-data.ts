@@ -95,7 +95,6 @@ export function siteGraph(): unknown {
           'https://quiblo-iptv.github.io/',
           REPOSITORY,
           'https://github.com/quiblo-iptv',
-          'https://www.patreon.com/c/Quiblo',
         ],
       },
       {

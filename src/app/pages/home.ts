@@ -41,9 +41,6 @@ import { FAQ } from '../core/structured-data';
           <a class="actions__button" href="https://github.com/sponsors/quiblo-iptv" rel="noopener">
             Sponsor on GitHub
           </a>
-          <a class="actions__button" href="https://www.patreon.com/c/Quiblo" rel="noopener">
-            Support on Patreon
-          </a>
         </div>
       </header>
 

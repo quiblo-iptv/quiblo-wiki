@@ -2,8 +2,8 @@
 /**
  * Draws every Quiblo mark, at every size anything asks for, from the app's own icon.
  *
- * The organisation, the wiki, the app listing and the Patreon page each want a picture, and
- * the way that normally goes is four slightly different ones — a logo exported once at the
+ * The organisation, the wiki and the app listing each want a picture, and the way that
+ * normally goes is three slightly different ones — a logo exported once at the
  * wrong size, then cropped by hand for the next place that needs it. So the shape lives here
  * as geometry and every file below is rendered from it.
  *
@@ -77,8 +77,8 @@ function mark({ solid = true, colour = ON_BRAND, radius = 0 } = {}) {
    *
    * It was exported with rounded corners, which leaves the four corners transparent. Every
    * place this icon goes then rounds it again — GitHub masks an avatar, a launcher masks an
-   * adaptive icon, Patreon masks a profile picture — and the page's own background shows
-   * through the gap between the two radii as four grey notches.
+   * adaptive icon, a store masks a listing tile — and the page's own background shows through
+   * the gap between the two radii as four grey notches.
    *
    * So the export is square and whoever displays it does the rounding, which is the one
    * arrangement that cannot disagree with itself. `radius` is there for the rare slot that
@@ -101,8 +101,8 @@ function mark({ solid = true, colour = ON_BRAND, radius = 0 } = {}) {
 /**
  * The mark beside the name, for anywhere wider than it is tall.
  *
- * [centred] exists for the Patreon cover and anything else that gets cropped: a banner is
- * shown full width on a desktop and cut to its middle on a phone, so a left-aligned lockup is
+ * [centred] exists for a cover image and anything else that gets cropped: a banner is shown
+ * full width on a desktop and cut to its middle on a phone, so a left-aligned lockup is
  * a lockup that disappears on half the devices that see it. Everything else stays left, where
  * a wordmark belongs.
  */
@@ -180,7 +180,7 @@ function render(svg, file, width, height) {
 
 if (!existsSync(OUT)) mkdirSync(OUT, { recursive: true });
 
-console.log('Icon — flat square. Organisation avatar, app listing, Patreon profile:');
+console.log('Icon — flat square. Organisation avatar, app listing:');
 for (const size of [1024, 512, 256, 192, 128, 64]) {
   render(mark(), `quiblo-icon-${size}.png`, size, size);
 }
@@ -210,8 +210,9 @@ for (const size of [512, 180, 64]) {
 }
 
 console.log('Wordmark — anywhere wider than it is tall:');
-// Patreon's cover is 1600x400. Everything else that wants a banner wants roughly this shape.
-render(wordmark(1600, 400, { centred: true }), 'quiblo-patreon-cover-1600x400.png', 1600, 400);
+// 1600x400 is what a cover slot asks for. Anything else wanting a banner wants roughly this
+// shape, and this one is centred because a cover is cropped to its middle on a phone.
+render(wordmark(1600, 400, { centred: true }), 'quiblo-cover-1600x400.png', 1600, 400);
 render(wordmark(1280, 320), 'quiblo-wordmark-1280x320.png', 1280, 320);
 // Centred: this is the one the organisation profile shows, and a profile README centres its
 // own block — so a lockup sitting left inside the image reads as a banner that has slipped in
