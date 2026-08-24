@@ -20,90 +20,160 @@ export const RELEASE_NOTES: WikiPage = {
   sections: [
     {
       id: 'alpha',
-      title: 'The current alpha — first launch, the timeline, and updating itself',
+      title: 'The current alpha — whose settings are these',
       html: `
-<p><strong>This is not on the releases page yet.</strong> It is four rounds of work merged onto one
-branch, waiting on a merge. Everything below it has shipped.</p>
+<p><strong>This is not on the releases page yet.</strong> It is one round of work waiting on a
+merge. Everything below it has shipped.</p>
 
-<h3>The television asks for your playlist on the first screen</h3>
-<p>Setting Quiblo up used to end at the terms and drop you into an app with nothing in it, where the
-next thing to do was four presses deep in Settings. There is a third page now: add the playlist or
-account you already have and it loads before the app opens, or skip and do it later. If it will not
-load, the page says so and offers to try again — rather than letting you in and leaving you to work
-out that nothing arrived.</p>
+<h3>Settings are yours, not the television's</h3>
+<p>A profile used to carry your favourites and your resume points and nothing else. Everything
+else — your theme, how far the skip buttons jump, which writing systems you had hidden, which
+shelves you had turned off — was shared by everybody using the device, and nothing on screen said
+so. Two people on one television had their own lists and one shared idea of what the app looked
+like.</p>
+<p>Everything a person chooses now belongs to that person, and <strong>the settings screen says
+which is which</strong>: it opens on two tabs, <strong>Profile</strong> and <strong>App</strong>.
+Profile holds your theme, playback tuning, subtitles, hidden writing systems, hidden categories,
+the merge switches and your tabs. App holds the device — sources, the Movie Database key, backup,
+updates and licences. Switching profile redraws the app immediately.</p>
+<p><strong>Nothing changes on upgrade.</strong> Every profile starts out seeing the settings the
+device already had, and they only go their own way when somebody changes one.</p>
 
-<h3>You can drag the film's timeline with the remote</h3>
-<p>The progress bar takes focus now, one press below play and pause. Left and right move a mark
-along it and <strong>the presses stack</strong>: six presses are one jump of six, made half a second
-after you stop, instead of six separate jumps and six re-buffers. Hold a direction and it speeds up,
-so crossing a two-hour film takes a few seconds — while the first few presses are still worth
-exactly the skip interval you chose in Settings, because that is what a small correction is for.
-Live channels have no timeline, since there is nothing to move through.</p>
+<h3>Hiding a category now actually hides it</h3>
+<p>Switching a category off removed it from the list of categories and from search, and left every
+title in it sitting in the catalogue — in the phone's grid, in the television's rows and in
+Recently Added. The browse queries never looked at the setting at all. They do now.</p>
+<p>The one exception is <strong>Favourites</strong>: a title you starred stays visible even if you
+later hide the shelf it came from. Hiding a category filters the catalogue; it never removes
+something you picked by hand.</p>
 
-<h3>The television can tell you when there is a newer Quiblo</h3>
-<p>A television has no store to update this app from. Settings → About now has a <strong>Check
-now</strong> button: it looks at the releases page, tells you if a newer version is there, downloads
-it, and <strong>checks it against the published checksum before offering to install it</strong> — a
-download that does not match is deleted rather than handed to the installer. Your television still
-asks its own permission before anything is installed, and if it refuses outright the file is
-downloaded and named so you can install it from a file manager.</p>
-<p><strong>Nothing is checked unless you press the button.</strong> Quiblo does not look at anything
-on its own, and that has not changed.</p>
+<h3>Hide the tabs you never use</h3>
+<p>Live, Movies, Series and Favourites can each be switched off, per profile. An M3U with no films
+no longer shows a Movies tab that opens on nothing. Search, Sources and the television's Home
+always stay, and the last visible tab will not switch off.</p>
+<p>It is a preference, not a lock — anybody can switch a tab back on. Quiblo still has no parental
+controls, and a chooser that looked like one without being one would be worse than none.</p>
 
-<h3>You may like actually looks at what you watched</h3>
-<p>It scored on genre and nothing else, which is why watching One Piece produced The Boys, The
-Umbrella Academy and a dubbed Arabic family drama: at the level of "series, Action &amp; Adventure"
-those are the same thing. It now weighs thirteen things — including whether something is
-<strong>anime</strong> rather than merely animated, what language it was made in, the words in its
-description, how many times you watched it, at what hour, whether you searched for it or took it off
-a shelf, whether it is a favourite, and what you said about it. Each of your strongest few titles
-proposes its own four, so somebody who watches anime and one cookery programme gets suggestions from
-both rather than from the average of them.</p>
-<p><strong>And it waits until it has something to say.</strong> Below five titles watched, three of
-them most of the way through, the row is not drawn at all.</p>
+<h3>One grid instead of shelves</h3>
+<p>A second switch beside <em>Merge duplicate titles</em>. Providers file the same film under
+<code>FILMS HD</code>, <code>FILMS 4K</code> and <code>FILMS AR</code>, so merging the copies still
+left it reachable from three shelves and the catalogue still read as three catalogues. Turn this on
+and the shelves go, leaving one grid of everything.</p>
 
-<h3>You can say what you thought</h3>
-<p>A thumbs up and a thumbs down on every film and series, on both apps. Pressing the lit one again
-takes it back. A thumbs down stops that title suggesting anything and stops it being suggested; a
-thumbs up makes it count for more. Nothing leaves the device — there is nowhere for it to go.</p>
-
-<h3>Quiblo keeps your catalogue up to date on its own</h3>
-<p>Until now the only way a new film reached the app was somebody opening Settings and pressing
-Refresh, so "Recently added" was really answering "what has your provider added since you last
-thought to check". It syncs every four days in the background, and it <em>merges</em> rather than
-rebuilding: a title still there keeps its place and the date it first appeared, a new one is dated
-now, and one your provider has dropped goes. That last part is what gives an M3U playlist a
-recently-added row at all. Popularity is re-checked every forty hours, still at no more than two
-requests in that window and still nothing at all without your own Movie Database key.</p>
-
-<h3>Your categories, in your own order</h3>
-<p>Settings has had "hide" and "rename" since it had a category list; it now has move up and move
-down as well, on both apps. The order you set is the order Live, Movies, Series and Favourites draw
-their rows in. Categories you have not moved stay in your provider's own order, behind the ones you
-have — so ordering three shelves out of ninety moves three and leaves the rest alone. It survives a
-refresh, because it is stored against your provider's own name for the category.</p>
-
-<h3>Now popular is two rows of ten</h3>
-<p>Films and series came from two different lists and were drawn as one row of five and five,
-numbered 1 to 5 twice. They are now <strong>Popular films</strong> and <strong>Popular
-series</strong>, ten each, numbered once, with the number beside the poster where it can be read
-from the sofa. A popular title your provider does not carry keeps its place and says
-<strong>Unavailable</strong> instead of quietly disappearing — a top ten with four films in it gave
-you no way to tell unpopular from absent.</p>
+<h3>Quiblo tells you when there is a newer version</h3>
+<p>Quiblo is installed from an APK and has no store behind it, so a build eight months old had no
+way of saying so — and the <em>Check now</em> button added last round only helps somebody who
+thinks to press it.</p>
+<p>It now asks our own releases page once each time it opens, and offers <strong>Update now</strong>
+or <strong>Later</strong> if there is something newer. The television downloads it and verifies the
+published checksum before the installer sees it, exactly as the button does; the phone opens the
+releases page in a browser, because it holds no install permission and deliberately never will.</p>
+<p><strong>It says nothing at all unless there is something newer.</strong> Not "up to date", not
+"could not reach" — those belong to the button, where you asked. One switch in Settings turns the
+whole thing off, and off means no request is made rather than an answer being hidden. Nothing about
+you or your device is ever sent; your version is compared on the device. The terms screen names it,
+because <a href="/wiki/legal-and-licence#privacy">"the app never phones home"</a> was written before
+this existed and is worth keeping honest.</p>
 
 <h3>Smaller things</h3>
 <ul>
-  <li>The playlist screen sits in the middle of the television, on a column of its own width rather
-      than a fraction of whatever panel it finds itself on. Save carries the same travelling light
-      Search and Play have, dimmer, because Search is the only thing on its screen and Save sits
-      beside a form you are still filling in.</li>
-  <li>Search's light fills the screen like every other tab's.</li>
-  <li>For You draws last night's rows the moment it opens instead of rebuilding them.</li>
-  <li>Recently Added holds fifteen rather than forty.</li>
-  <li>"Resume from" is there when you come back — the resume point survives the back press that
-      earned it.</li>
-  <li>A film's details sit in the middle of the television screen.</li>
-  <li>Hiding a writing system now applies to the For You rows as well.</li>
+  <li>A film or series screen on the television is lit again. The ambient light belonged to the
+      shell, and the shell is taken down whenever a detail screen opens over it — so the two
+      screens with the best artwork in the app were the two that stayed black.</li>
+  <li>The favourite control on the television's hero slider is no longer red. A filled icon, a red
+      tint, a red panel and a red border all said the same thing four times, in the one colour a
+      television uses for errors. The heart is filled or hollow; the chrome follows focus.</li>
+  <li>Search result headings stay on screen on a real television panel. <em>Live</em>,
+      <em>Movies</em> and <em>Series</em> were there on a phone and on the emulator and gone on the
+      television: the poster row was a fixed size, so on a shorter panel it did not fit under the
+      search field. The tiles are now sized from the room the row is actually given.</li>
+</ul>`,
+    },
+    {
+      id: 'v0-25',
+      title: '0.25.0 — one entry per title, and a key on the first screen',
+      html: `
+<h3>Merge duplicate titles</h3>
+<p>A provider that lists one film in SD, HD, FHD and 4K sends four rows. Turn this on in Settings
+and the catalogue, the search results, the recently-added row and the category counts show it once,
+with the copies offered on the film's own screen — so switching to the 4K one is a press. Off by
+default, because merging hides rows a provider sent.</p>
+
+<h3>First launch asks for a Movie Database key</h3>
+<p>A fourth page after the playlist, skippable in one press, with a button that opens the page
+where a key is made. Nothing on screen used to say a key existed, so anybody who never opened
+Settings never found out why their films had no posters.</p>
+
+<h3>Advanced search filters by year</h3>
+<p>A Years chip beside Genres on the television, listing every year the app has metadata for,
+newest first — on its own or together with a genre. It shares the one chip strip rather than taking
+a row of its own, because a second row is what pushes a focused result off the bottom of the
+screen.</p>
+
+<h3>Your categories are yours</h3>
+<p>Hiding, renaming and reordering a category used to decide it for everybody on the device.
+Everything that existed is copied to every profile on upgrade, so nobody's list changes; they go
+their own way from there.</p>
+
+<h3>Smaller things</h3>
+<ul>
+  <li>The button that changes the featured titles is back on the television home screen.</li>
+  <li>The launch screen no longer plays again every time the screen rotates.</li>
+  <li>The Quiblo mark on the launch screen is the app's own mark again, rather than a hand-made
+      copy with the ring, the tail and the play triangle in the wrong places.</li>
+  <li>The television build is a megabyte smaller — it shipped the launch sound twice.</li>
+</ul>`,
+    },
+    {
+      id: 'v0-21-to-0-24',
+      title: '0.21.0 to 0.24.0 — a hero slider, and a launch screen with a sting',
+      html: `
+<h3>A featured hero slider on the television</h3>
+<p>The television home screen opens on a full-bleed hero banner with a six-step D-pad flow through
+the top controls, play, a heart, and the pagination dots. Favourite a featured title without leaving
+the banner. Backdrops and posters moved to full resolution, because a large panel is exactly where a
+scaled-up thumbnail shows.</p>
+
+<h3>A launch screen</h3>
+<p>An animated mark with the version number in the corner, on both apps, crossfading into the
+consent and profile screens. The television's got an audio sting and a zoom-through timed to
+it.</p>
+
+<h3>Smaller things</h3>
+<ul>
+  <li>Home-screen shelves are ordered — Popular films, Popular series, Recently added, You may like
+      — with a dark scrim keeping the tab bar legible over a full-bleed backdrop.</li>
+  <li>Outlined rating thumbs when unselected, and icon-only start-over and remove-from-history
+      buttons on the television's film and series screens.</li>
+  <li>The series screen scrolls its header out of the way on focus, and the season row navigates
+      more predictably.</li>
+  <li>The television search bar is optically centred with tighter filter spacing.</li>
+</ul>`,
+    },
+    {
+      id: 'v0-20',
+      title: '0.20.0 to 0.20.2 — the television, used rather than demonstrated',
+      html: `
+<p>Eight faults found by using the app for an evening rather than by reading it — none of them
+reachable by opening a screen and looking at it.</p>
+<ul>
+  <li><strong>Backing out of a film puts you back on the tile you opened it from.</strong> The
+      television used to land you at the top of the catalogue. Every tab keeps its own place too,
+      and switching between them no longer snatches the remote off the tab bar.</li>
+  <li><strong>The remote can no longer be left on nothing inside the player.</strong> The controls
+      arrive with the stream, so a button could disappear from under the cursor and leave presses
+      going nowhere.</li>
+  <li><strong>Scrubbing the timeline shows you where you are going.</strong> The mark has a handle,
+      in a lane of its own so the buttons underneath do not shift as it grows.</li>
+  <li><strong>A focused search result is no longer sliced along its title.</strong></li>
+  <li><strong>Back in the player exits playback</strong> rather than only hiding the controls.</li>
+  <li><strong>"You may like" appears for people who star titles and finish none of them.</strong>
+      A favourite is evidence about your taste.</li>
+  <li><strong>Advanced search can look at live channels from the search screen</strong>, as a switch
+      beside the field rather than a setting two screens away — and <em>Include hidden</em> is a
+      switch too, beside the field instead of behind the suggestions.</li>
+  <li><strong>A genre chip chooses, and Clear unchooses.</strong> Pressing a chip a second time no
+      longer takes it off.</li>
 </ul>`,
     },
     {

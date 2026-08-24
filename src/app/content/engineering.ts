@@ -340,7 +340,12 @@ it stands.</p>`,
           title: 'What ships',
           html: `
 <p>Two APKs per release — the phone build and the television build — published to GitHub
-Releases. There is no store listing and no update check.</p>
+Releases, each with a <code>.sha256</code> beside it. There is no store listing.</p>
+<p>Those asset names are a contract rather than a convention: the app reads the same releases
+page to find out whether it is out of date, matches <code>quiblo-tv-v</code> or
+<code>quiblo-v</code> to pick its own build, and verifies the published checksum before the
+television hands anything to the installer. A release that renamed an asset would break the
+update path silently.</p>
 <p>Both are R8-minified and both are size-budgeted. The television APK being <em>smaller</em>
 than the phone's, despite depending on every feature module, is the standing confirmation
 that R8 really does strip the phone UI it never references.</p>`,

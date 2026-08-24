@@ -153,11 +153,13 @@ turns its feature on:</p>
 <p>Two of our architectural invariants are privacy properties, and they are held to
 the same standard as any other correctness rule:</p>
 <ul>
-  <li><strong>The app never phones home.</strong> The only outbound traffic is to hosts the
-    user explicitly configured. No analytics, no crash-reporting SDK, no update check against
-    a project-controlled server. The optional metadata and channel-logo features are the only
-    third-party hosts, both are off by default, and both are the user's own choice to
-    enable.</li>
+  <li><strong>The app never phones home.</strong> No analytics, no crash-reporting SDK, no
+    telemetry, no account and no server of ours. Outbound traffic goes to hosts the user
+    explicitly configured, with one named exception: a request for the public release
+    manifest on our GitHub releases page, once per launch, which sends nothing about the
+    device or the viewer and can be switched off in Settings. The optional metadata and
+    channel-logo features are the only third-party hosts, both are off by default, and both
+    are the user's own choice to enable.</li>
   <li><strong>Credentials never leave the device.</strong> Xtream usernames and passwords are
     stored encrypted in DataStore — never in the database, so a database export or a debug
     dump cannot leak them — and are never written to logs, exports or crash traces. The
@@ -213,9 +215,15 @@ the code is held to, and two of them fail the build if broken.</p>
 <ul>
   <li><strong>There is no account and no server of ours.</strong> Quiblo has no backend. There
     is nothing to sign up for and nothing to sign in to.</li>
-  <li><strong>The app never phones home.</strong> The only outbound traffic goes to hosts you
-    entered yourself. No analytics, no crash-reporting service, no update check against a
-    server we control — which is also why the app cannot update itself.</li>
+  <li><strong>The app never phones home.</strong> No analytics, no crash-reporting service, no
+    telemetry, and no server of ours. Outbound traffic goes to hosts you entered
+    yourself.</li>
+  <li><strong>One exception, and we name it rather than bury it.</strong> Unless you switch it
+    off in Settings, the app asks our own GitHub releases page once each time it opens whether
+    a newer version exists. It is a plain request for a public file — no identifier, no device
+    information, nothing about you — and with the setting off no request is made at all.
+    Quiblo is installed from an APK with no store behind it, and a player that never says it
+    is out of date is a player whose fixes never arrive.</li>
   <li><strong>Credentials never leave the device.</strong> Xtream usernames and passwords are
     stored encrypted, and are never written to logs, exports or crash traces. Export a backup
     and the passwords are not in it; the app says so on the screen where you make one.</li>
@@ -334,7 +342,9 @@ regardless of whether the tests pass.</p>
     XMLTV later needs no schema migration.</li>
   <li><strong>Playback is behind an interface.</strong> Feature code never touches ExoPlayer;
     it talks to a <code>PlayerController</code>. That is the seam where DRM would slot in.</li>
-  <li><strong>The app never phones home.</strong></li>
+  <li><strong>The app never phones home.</strong> No telemetry and no server of ours; the one
+    unprompted request is a check for a newer release, which sends nothing and can be switched
+    off.</li>
   <li><strong>Credentials never leave the device.</strong></li>
 </ol>
 <p>Rules 1 and 2 are why our television frontend cost a presentation layer instead of a second

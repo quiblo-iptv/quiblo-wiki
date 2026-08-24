@@ -877,7 +877,13 @@ would be a second place for the shake to come back unmeasured.</p>`,
 <p>The metadata service and the channel-logo index are the only third-party hosts the app ever
 contacts. Both are <strong>off unless the user turns them on</strong>, and that is the "never
 phones home" invariant rather than a UI preference: a clean install talks to nothing but the
-hosts the user typed.</p>`,
+hosts the user typed.</p>
+<p>Our own releases page is the one host that is <em>on</em> by default, and it is the exception
+that proves the rule rather than a hole in it: it is our page, the request is for a public file,
+nothing about the device or the viewer is sent, and one switch stops it entirely. Quiblo is
+installed by sideload with no store behind it, so a build that cannot say it is out of date is a
+build whose security fixes never arrive. See
+<a href="/wiki/settings-reference#updates">Checking for updates</a>.</p>`,
         },
         {
           id: 'tmdb',

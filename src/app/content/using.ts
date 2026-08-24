@@ -207,21 +207,41 @@ It has <a href="/wiki/settings-reference#scan">its own budget</a>.</p>`,
           id: 'what-they-are',
           title: 'What a profile owns',
           html: `
-<p>A household shares a television, and a resume point is personal. A profile carries
-<strong>favourites and resume positions</strong>, and nothing else.</p>
-<p>Everything else stays app-wide, deliberately:</p>
+<p>A household shares a television, and almost nothing about how you watch is shared with it.
+A profile carries <strong>everything you choose</strong>; what is left over belongs to the
+device.</p>
 <table>
-  <thead><tr><th>Per profile</th><th>Shared by everyone</th></tr></thead>
+  <thead><tr><th>Yours</th><th>The device's</th></tr></thead>
   <tbody>
     <tr><td>Favourites</td><td>Sources and passwords</td></tr>
-    <tr><td>Resume points, including per episode</td><td>Player settings — skip, buffering, quality</td></tr>
-    <tr><td>Continue watching</td><td>Hidden and renamed categories</td></tr>
-    <tr><td></td><td>The metadata key, and what it has cached</td></tr>
+    <tr><td>Resume points, including per episode</td><td>The Movie Database key, and what it has cached</td></tr>
+    <tr><td>Continue watching</td><td>Backup and restore</td></tr>
+    <tr><td>Theme and colour</td><td>Whether the app checks for updates when it opens</td></tr>
+    <tr><td>Playback tuning — skip, buffering, quality, auto-next</td><td></td></tr>
+    <tr><td>Subtitle style</td><td></td></tr>
+    <tr><td>Hidden, renamed and reordered categories</td><td></td></tr>
+    <tr><td>Hidden writing systems</td><td></td></tr>
+    <tr><td>Which tabs the bar shows</td><td></td></tr>
+    <tr><td>Merging duplicate titles, and collapsing shelves</td><td></td></tr>
+    <tr><td>Channel logo lookup, and the player's ambient light</td><td></td></tr>
   </tbody>
 </table>
 <p>The dividing line is whether a setting describes the person on the sofa or the television
-and the account behind it. A playlist is the household's, and a home that had to type its
-Xtream credentials in once per person would rightly call that a bug.</p>`,
+and the account behind it. A theme is a taste; a playlist is the household's, and a home that
+had to type its Xtream credentials in once per person would rightly call that a bug. The
+update check sits on the right for the same reason — it decides whether <em>the device</em>
+makes a request, and a home where that depended on who pressed a profile first could not
+answer "does this app phone out?" at all.</p>
+<p><strong>The settings screen says which is which.</strong> It opens on two tabs,
+<strong>Profile</strong> and <strong>App</strong>, and every control sits under the one that
+owns it. Switching profile redraws the app immediately — the theme, the shelves and the tab
+bar change with the favourites.</p>
+<p><strong>It was not always this way.</strong> Until 2026-08-24 a profile carried favourites
+and resume points and nothing else, and everything in the table's left column was shared. Two
+people on one television had their own lists and one shared idea of what the app looked like,
+with nothing on screen saying where the line was. If you are upgrading, see
+<a href="/wiki/profiles#upgrading">Upgrading</a> — nothing changes until somebody changes
+it.</p>`,
         },
         {
           id: 'choosing',
@@ -272,7 +292,12 @@ moved onto a single profile named <strong>Default</strong>, and the first launch
 upgrading shows the chooser with that profile in it. Pick it and everything is where you left
 it.</p>
 <p>A household of one can pick Default every few weeks and otherwise forget the feature
-exists.</p>`,
+exists.</p>
+<p><strong>The same is true of the settings that moved on 2026-08-24.</strong> Every profile
+starts out seeing the settings the device already had — your theme, your skip interval, your
+hidden writing systems — rather than starting from defaults. They only go their own way when
+somebody changes one, and then only for that person. Nobody is asked to set the app up
+again.</p>`,
         },
       ],
     },
@@ -288,7 +313,9 @@ exists.</p>`,
           html: `
 <p>Five destinations: <strong>Live</strong>, <strong>Movies</strong>, <strong>Series</strong>,
 <strong>Favourites</strong> and <strong>Sources</strong>, with Settings reachable from the
-top bar.</p>
+top bar. The first four can each be switched off per profile — see
+<a href="/wiki/settings-reference#tabs">Tabs</a> — and Sources always stays, because it is the
+only way to the screen that adds a playlist.</p>
 <p>Movies and Series default to poster grids, because artwork is how a title is recognised.
 Live is a list — a channel's artwork is a small wide logo, and a grid of those is
 unreadable.</p>
@@ -298,8 +325,9 @@ responsive across a twenty-thousand-entry playlist.</p>
 <p>Those search fields each answer for one kind: searching under Movies searches films. The
 <a href="/wiki/television#search">single search across all three kinds</a> is on the
 television today, and the phone is the side of that pair still to be brought over.</p>
-<p>Which favourites and which resume points you see depends on
-<a href="/wiki/profiles">who is watching</a>. Everything else here is shared.</p>`,
+<p>What you see here depends on <a href="/wiki/profiles">who is watching</a>: favourites,
+resume points, the shelves you have hidden and the tabs you have switched off all belong to
+the profile. Sources and passwords belong to the device.</p>`,
         },
         {
           id: 'accessibility',
@@ -413,8 +441,14 @@ adding a playlist is a thing done once and the bar is for things done daily.</p>
 <p>Movies and Series are one horizontally scrolling row per category, stacked vertically.
 That replaces the phone's category <em>filter</em> outright: on a phone you pick a category
 and get a grid, on a television every category is on screen and the remote walks through
-them.</p>
-<p>Live keeps the list shape, with a category rail down the left.</p>`,
+them. If your provider's categories are more noise than help,
+<a href="/wiki/settings-reference#duplicates">one grid instead of shelves</a> collapses them
+into a single grid of everything.</p>
+<p>Live keeps the list shape, with a category rail down the left.</p>
+<p>The bar shown above is the full one. Live, Movies, Series and Favourites can each be
+switched off per profile — see <a href="/wiki/settings-reference#tabs">Tabs</a> — while the
+search magnifier, Home and the settings gear always stay.</p>`,
+
         },
         {
           id: 'focus',
@@ -583,10 +617,18 @@ catalogue</a> is what raises it.</p>`,
           title: 'Settings on a television',
           html: `
 <p>Every setting the phone has, except two — plus two things the phone reaches elsewhere.</p>
+<p><strong>Two tabs at the top: Profile and App.</strong> The same split the phone has, for the
+same reason — a television is the one device where "whose setting is this?" has more than one
+answer. Walk right along the two chips to change halves, and down to enter whichever one is
+showing. See <a href="/wiki/settings-reference#two-halves">the settings reference</a>.</p>
 <p><strong>Sources lives here</strong>, rather than on the tab bar, and so does
 <strong>Switch profile</strong>. Both are things a viewer does rarely, and the bar is
 expensive: every position on it is one more press between somebody and what they came to
-watch.</p>
+watch. Sources sits under <strong>App</strong> and the profile row under
+<strong>Profile</strong>.</p>
+<p><strong>Which tabs the bar draws is a setting here too.</strong> Live, Movies, Series and
+Favourites can each be switched off, per profile — see
+<a href="/wiki/settings-reference#tabs">Tabs</a>.</p>
 <p><strong>Theme mode and dynamic colour are deliberately absent.</strong> The television
 theme is always dark by design — a television is watched at a distance in a dim room — and a
 television has no wallpaper for a dynamic palette to be drawn from. Both controls would
@@ -631,6 +673,89 @@ remote's own hardware keys or nothing at all.</p>
       summary: 'Every setting, what it changes, and where it is stored.',
       sections: [
         {
+          id: 'two-halves',
+          title: 'Profile and App',
+          html: `
+<p>Settings opens on two tabs, and the split is the whole answer to a question the screen used
+to leave open: <em>whose setting is this?</em></p>
+<ul>
+  <li><strong>Profile</strong> — everything you choose. Theme, playback tuning, subtitles,
+    hidden writing systems, hidden and renamed categories, the merge switches, channel logos,
+    the player's ambient light, and which tabs you see. Switching profile redraws the app
+    immediately.</li>
+  <li><strong>App</strong> — the device. Sources, the Movie Database key and its catalogue
+    scan, backup and restore, the update check, licences and the version number.</li>
+</ul>
+<p>Before 2026-08-24 everything on this page was shared by everybody using the device, while
+favourites and resume points were not — with nothing on screen saying where the line fell.
+<a href="/wiki/profiles#what-they-are">Who is watching</a> sets out the division in full.</p>`,
+        },
+        {
+          id: 'tabs',
+          title: 'Tabs',
+          html: `
+<p>Four tabs can be switched off, per profile: <strong>Live TV</strong>,
+<strong>Movies</strong>, <strong>Series</strong> and <strong>Favourites</strong>. An M3U with
+no films shows a Movies tab that opens on nothing, and a household that never watches series
+still walks past Series to reach Films every evening.</p>
+<p>Three things it deliberately does not do:</p>
+<ul>
+  <li><strong>Search, Sources and the television's Home cannot be hidden.</strong> Two of them
+    are the only way to reach something that is not on a shelf; hiding the third would leave
+    the app opening on a tab it has been told not to draw.</li>
+  <li><strong>The last visible tab will not switch off.</strong> The control refuses rather
+    than greying out, because which one is last changes as you switch the others.</li>
+  <li><strong>It is not a lock.</strong> Hiding a tab is a preference, not parental control —
+    anybody can switch it back on. See <a href="/wiki/profiles#no-pin">No PIN</a>.</li>
+</ul>
+<p>Hiding the tab you are currently on moves you to a visible one rather than leaving a screen
+with no way back to it.</p>`,
+        },
+        {
+          id: 'duplicates',
+          title: 'Duplicate titles, and shelves',
+          html: `
+<p>Two switches, and the second only appears once the first is on.</p>
+<table>
+  <thead><tr><th>Setting</th><th>What it does</th></tr></thead>
+  <tbody>
+    <tr><td>Merge duplicate titles</td><td>A provider that carries one film in SD, HD, FHD and 4K sends four rows. On, the catalogue, search, the recently-added row and the category counts show it once, and the copies are offered on the film's own screen</td></tr>
+    <tr><td>One grid instead of shelves</td><td>Those same four copies are usually filed under four categories — <code>FILMS HD</code>, <code>FILMS 4K</code>, <code>FILMS AR</code>. On, the shelves go and the whole kind is one grid</td></tr>
+  </tbody>
+</table>
+<p>Both are off by default, because both <em>hide</em> rows a provider sent, and hiding rows
+nobody asked to hide is how somebody comes to believe their account is missing something.</p>
+<p>The second is hidden rather than greyed out while the first is off. Collapsing the shelves
+without merging the copies would give you one grid in which every film appears four times in a
+row — the worst of both settings, and not a state worth offering.</p>`,
+        },
+        {
+          id: 'updates',
+          title: 'Checking for updates',
+          html: `
+<p>Quiblo is installed from an APK and has no store behind it, so nothing would otherwise tell
+you that the build on your television is eight months old.</p>
+<p><strong>Check on launch</strong>, under the App tab, is on by default. Once each time the
+app opens it asks our own GitHub releases page whether a newer version exists. If there is
+one, you get <em>Update now</em> or <em>Later</em>; the television downloads it and verifies
+the published checksum before handing it to the system installer, and the phone opens the
+releases page in a browser — it holds no install permission and deliberately never will.</p>
+<p>Four things about it are decisions rather than details:</p>
+<ul>
+  <li><strong>Off means no request.</strong> Not a hidden answer — nothing goes out at all.</li>
+  <li><strong>Nothing about you is sent.</strong> It is a plain request for a public file. No
+    identifier, no device information, no body; your version is compared on the device.</li>
+  <li><strong>Silence when there is nothing to say.</strong> Up to date, offline and
+    unreachable show nothing at all. Those answers belong to the
+    <em>Check now</em> button further down the same page, where you asked for them.</li>
+  <li><strong>Once per launch.</strong> Switching profile or backing out to the home screen
+    does not ask again.</li>
+</ul>
+<p>There is no "skip this version". Dismissing an update means <em>not now</em>, and a switch
+recording which release you said no to is a second setting you could never find again to
+undo.</p>`,
+        },
+        {
           id: 'playback',
           title: 'Playback',
           html: `
@@ -661,7 +786,8 @@ the phone until the phone can honour it.</p>`,
     <tr><td>Dynamic colour</td><td>On, Off — Material You, taking the palette from the wallpaper</td></tr>
   </tbody>
 </table>
-<p>Neither exists on the television. See <a href="/wiki/television#settings">above</a>.</p>`,
+<p>Neither exists on the television. See <a href="/wiki/television#settings">above</a>.</p>
+<p>Both belong to the profile, so two people on one phone can have different themes.</p>`,
         },
         {
           id: 'categories',
@@ -675,7 +801,19 @@ Two local edits are offered, per content kind:</p>
 </ul>
 <p>Both are local only; nothing is sent anywhere. The provider's original title stays the
 storage key, so an edit reattaches after every refresh rather than being lost with the row
-ids. A blank rename removes the override rather than storing one that says nothing.</p>`,
+ids. A blank rename removes the override rather than storing one that says nothing.</p>
+<p><strong>Hiding means hidden.</strong> A hidden category's titles are gone from browsing, from
+the television's rows and from the recently-added row, not merely from the list of categories.
+Until 2026-08-24 they were only gone from that list, which made the setting look as though it
+did nothing.</p>
+<p><strong>Except in Favourites.</strong> A title you starred stays starred and stays visible
+even if you later hide the shelf it came from. Hiding a category filters the catalogue; it
+never removes something you picked by hand.</p>
+<p>Search omits hidden categories too, unless <em>Include hidden</em> is switched on in
+<a href="/wiki/television#search">advanced search</a>.</p>
+<p>Every edit belongs to the profile that made it, so two people on one television can hide
+different shelves.</p>`,
+
         },
         {
           id: 'metadata',
@@ -739,9 +877,10 @@ everything else you use it for.</p>`,
           html: `
 <p>Shows the current profile and offers <strong>Switch profile</strong>, which returns you to
 the chooser. Adding a profile happens in the chooser itself.</p>
-<p>Only favourites and resume points belong to a profile; everything else on this page is
-shared by everyone using the device. <a href="/wiki/profiles">Who is watching</a> sets out the
-whole division, and what guest does differently.</p>`,
+<p>It sits at the top of the <strong>Profile</strong> tab, because everything under that tab
+belongs to whoever it names. What is left on the <strong>App</strong> tab is shared by everyone
+using the device. <a href="/wiki/profiles">Who is watching</a> sets out the whole division, and
+what guest does differently.</p>`,
         },
         {
           id: 'logos',
@@ -752,7 +891,11 @@ supplied none, from a public reference list.</p>
 <p>Off by default is not a UI preference here — it is the "never phones home" invariant. A
 clean install talks to nothing but the hosts you typed until you say otherwise.</p>
 <p>It costs one download of a single index file, cached to the database, rather than a request
-per channel.</p>`,
+per channel.</p>
+<p>The switch belongs to the profile; the downloaded index belongs to the device, because it is
+one file everybody shares. Switching it off drops that file, which is the point — turning this
+off is asking the app to stop holding a third party's data, not asking it to stop looking at
+it for you alone.</p>`,
         },
         {
           id: 'backup',
