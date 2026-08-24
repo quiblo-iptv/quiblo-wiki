@@ -1,19 +1,27 @@
 #!/usr/bin/env node
 /**
- * Writes sitemap.xml and robots.txt into the build output.
+ * Writes sitemap.xml and robots.txt into the build output, and refuses to write a sitemap
+ * that disagrees with either the build or the content.
  *
- * A single-page app has no files for its routes, so a crawler has nothing to follow except
- * the links it finds by executing the page. A sitemap makes every route discoverable
- * without that, which matters most for the deep ones — a class in the code reference is
- * three links from the home page and would otherwise be crawled last or not at all.
+ * The site is prerendered, so every route exists as a real file: `wiki/database/index.html`
+ * and so on. The sitemap is therefore derived from the build output rather than from a list
+ * kept alongside it — a page that was built is in the sitemap by construction, and a URL in
+ * the sitemap has a file behind it by construction.
  *
- * Run after the build, with the public origin as the first argument:
+ * That is a reaction to how this went wrong. The previous version scanned four content files
+ * named by hand; a fifth was added later and never added here, so three pages were never
+ * submitted to a search engine at all. Deriving from the output fixes that direction, and the
+ * cross-check below fixes the other one: the slugs declared in the content are compared
+ * against the files that were built, and any difference fails the build rather than shipping
+ * a sitemap that is quietly short.
+ *
+ * Run after the production build, with the public origin as the first argument:
  *
  *   node tools/seo.mjs https://quiblo-iptv.github.io/quiblo-wiki
  */
 
-import { writeFileSync, existsSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { join, relative } from 'node:path';
 
 const OUT = 'dist/quiblo-wiki/browser';
 const origin = (process.argv[2] ?? 'http://localhost:4321').replace(/\/$/, '');
@@ -23,26 +31,26 @@ if (!existsSync(OUT)) {
   process.exit(1);
 }
 
-// Read the routes out of the content itself rather than maintaining a second list — a page
-// that exists but is missing from the sitemap is exactly the kind of drift nobody notices.
-const wikiSlugs = [
-  ...readSlugs('src/app/content/orientation.ts'),
-  ...readSlugs('src/app/content/using.ts'),
-  ...readSlugs('src/app/content/architecture.ts'),
-  ...readSlugs('src/app/content/engineering.ts'),
-];
-const apiIds = [
-  ...readIds('src/app/api/content/core.ts'),
-  ...readIds('src/app/api/content/source.ts'),
-  ...readIds('src/app/api/content/ui.ts'),
-];
+const built = prerenderedPaths(OUT);
+const declared = declaredPaths();
 
-const urls = [
-  { loc: `${origin}/`, priority: '1.0' },
-  { loc: `${origin}/api`, priority: '0.8' },
-  ...wikiSlugs.map((slug) => ({ loc: `${origin}/wiki/${slug}`, priority: '0.7' })),
-  ...apiIds.map((id) => ({ loc: `${origin}/api/${id}`, priority: '0.5' })),
-];
+const missing = declared.filter((path) => !built.includes(path));
+const extra = built.filter((path) => !declared.includes(path));
+
+if (missing.length || extra.length) {
+  console.error('The build and the content disagree about which pages exist.');
+  for (const path of missing) console.error(`  declared but not built: ${path}`);
+  for (const path of extra) console.error(`  built but not declared:  ${path}`);
+  process.exit(1);
+}
+
+// A trailing slash on every path but the root, because that is the URL the file is actually
+// at: a static host answers the slashless form with a redirect to it. Submitting the redirect
+// costs every page in the site a hop and reports as "page with redirect" rather than indexed.
+const urls = built.map((path) => ({
+  loc: path === '/' ? `${origin}/` : `${origin}${path}/`,
+  priority: priorityFor(path),
+}));
 
 const today = new Date().toISOString().slice(0, 10);
 
@@ -68,15 +76,55 @@ writeFileSync(join(OUT, 'robots.txt'), robots);
 console.log(`  sitemap.xml — ${urls.length} URLs at ${origin}`);
 console.log('  robots.txt');
 
-function readSlugs(path) {
-  return read(path, /slug:\s*'([a-z0-9-]+)'/g);
+/** Every prerendered page, as a route path: `/`, `/api`, `/wiki/database`. */
+function prerenderedPaths(root) {
+  const found = [];
+
+  const walk = (directory) => {
+    for (const entry of readdirSync(directory, { withFileTypes: true })) {
+      const path = join(directory, entry.name);
+      if (entry.isDirectory()) {
+        walk(path);
+      } else if (entry.name === 'index.html') {
+        const route = '/' + relative(root, directory).split('\\').join('/');
+        found.push(route === '/.' ? '/' : route);
+      }
+    }
+  };
+
+  walk(root);
+  return found.sort();
 }
 
-function readIds(path) {
-  return read(path, /^\s{4}id:\s*'([a-z0-9-]+)'/gm);
+/**
+ * Every page the content declares, as the same route paths.
+ *
+ * The directories are read rather than the files named, because naming them is what went
+ * wrong: a new content file is picked up here the moment it exists.
+ */
+function declaredPaths() {
+  const slugs = readAll('src/app/content', /slug:\s*'([a-z0-9-]+)'/g);
+  const ids = readAll('src/app/api/content', /^\s{4}id:\s*'([a-z0-9-]+)'/gm);
+
+  return [
+    '/',
+    '/api',
+    ...slugs.map((slug) => `/wiki/${slug}`),
+    ...ids.map((id) => `/api/${id}`),
+  ].sort();
 }
 
-function read(path, pattern) {
-  const source = readFileSync(path, 'utf8');
-  return [...source.matchAll(pattern)].map((match) => match[1]);
+function readAll(directory, pattern) {
+  return readdirSync(directory)
+    .filter((name) => name.endsWith('.ts') && !name.endsWith('.spec.ts'))
+    .flatMap((name) => {
+      const source = readFileSync(join(directory, name), 'utf8');
+      return [...source.matchAll(new RegExp(pattern))].map((match) => match[1]);
+    });
+}
+
+function priorityFor(path) {
+  if (path === '/') return '1.0';
+  if (path === '/api') return '0.8';
+  return path.startsWith('/api/') ? '0.5' : '0.7';
 }

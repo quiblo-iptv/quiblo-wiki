@@ -1,34 +1,40 @@
-import { Injectable, inject } from '@angular/core';
+import { DOCUMENT, Injectable, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { findPackage } from '../api/content';
 import { findPage } from '../content';
-import { faqGraph, SITE_DESCRIPTION, siteGraph, SOCIAL_IMAGE } from './structured-data';
+import {
+  faqGraph,
+  SITE_DESCRIPTION,
+  SITE_ORIGIN,
+  siteGraph,
+  SOCIAL_IMAGE,
+} from './structured-data';
 
 /**
  * Per-page titles, descriptions and canonical URLs.
  *
- * A single-page app serves one HTML file for every route, so without this every page shares
- * one title and one description — which is what a search engine and a link preview both read
- * first. Crawlers execute JavaScript now, so updating the tags after navigation does work;
- * what does not work is leaving them alone.
+ * This runs twice over: once in the browser on every navigation, and once per route while the
+ * build prerenders the site. The second is the one that matters for search — it is what bakes
+ * each page's own title, description and canonical link into the file that gets served,
+ * instead of leaving every route sharing whatever `index.html` was written with.
  *
- * The canonical link matters more here than usual: the deployment serves index.html for
- * unknown paths, so a typo'd URL renders the site rather than 404ing, and without a canonical
- * every typo is an indexable duplicate.
+ * Rendering happens in Node, where there is no global `document` and no origin at all, which
+ * is why the document is injected rather than reached for and why the canonical is built from
+ * the declared `SITE_ORIGIN` rather than from `baseURI`.
+ *
+ * The canonical is worth the care: the 404 page is the router shell, so a mistyped URL still
+ * renders the site, and without a canonical every typo is an indexable duplicate.
  */
 @Injectable({ providedIn: 'root' })
 export class SeoService {
   private readonly router = inject(Router);
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
-
-  private origin = '';
+  private readonly document = inject(DOCUMENT);
 
   start(): void {
-    this.origin = document.baseURI.replace(/\/$/, '');
-
     // What this site is, in the one vocabulary a search engine does not have to infer from
     // prose. Written once, at boot, because it describes the software and the publisher —
     // neither of which changes as you navigate.
@@ -56,17 +62,17 @@ export class SeoService {
    * that contradicts itself is treated as a reason to trust none of it.
    */
   private addGraph(id: string, graph: unknown): void {
-    document.getElementById(id)?.remove();
+    this.document.getElementById(id)?.remove();
 
-    const script = document.createElement('script');
+    const script = this.document.createElement('script');
     script.id = id;
     script.type = 'application/ld+json';
     script.textContent = JSON.stringify(graph);
-    document.head.appendChild(script);
+    this.document.head.appendChild(script);
   }
 
   private apply(url: string): void {
-    const { title, description } = describe(url);
+    const { title, description } = pageMeta(url);
 
     this.title.setTitle(title);
     this.meta.updateTag({ name: 'description', content: description });
@@ -81,24 +87,38 @@ export class SeoService {
       property: 'og:type',
       content: isHome(url) ? 'website' : 'article',
     });
-    this.meta.updateTag({ property: 'og:url', content: this.origin + url });
+    this.meta.updateTag({ property: 'og:url', content: publicUrl(url) });
     // Large, because there is an image now. `summary` renders a thumbnail and wastes it.
     this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
     this.meta.updateTag({ name: 'twitter:title', content: title });
     this.meta.updateTag({ name: 'twitter:description', content: description });
 
-    this.setCanonical(this.origin + url);
+    this.setCanonical(publicUrl(url));
   }
 
   private setCanonical(href: string): void {
-    let link = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    let link = this.document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     if (!link) {
-      link = document.createElement('link');
+      link = this.document.createElement('link');
       link.rel = 'canonical';
-      document.head.appendChild(link);
+      this.document.head.appendChild(link);
     }
     link.href = href;
   }
+}
+
+/**
+ * The absolute URL a route is published at.
+ *
+ * Prerendering writes every route as `<path>/index.html`, and a static host answers the
+ * slashless form with a redirect to the slashed one. The canonical, the Open Graph URL and the
+ * sitemap all have to name the file that exists rather than the redirect that reaches it,
+ * otherwise every page in the site is submitted as a URL that 301s.
+ */
+export function publicUrl(url: string): string {
+  const path = url.split('#')[0].split('?')[0];
+  const trimmed = path.replace(/\/+$/, '');
+  return trimmed === '' ? `${SITE_ORIGIN}/` : `${SITE_ORIGIN}${trimmed}/`;
 }
 
 const SITE = 'Quiblo';
@@ -108,7 +128,8 @@ function isHome(url: string): boolean {
   return url.split('#')[0].split('?')[0].replace(/\/$/, '') === '';
 }
 
-function describe(url: string): { title: string; description: string } {
+/** The title and description a route publishes under. One owner, browser and build alike. */
+export function pageMeta(url: string): { title: string; description: string } {
   const path = url.split('#')[0].split('?')[0];
 
   const wiki = path.match(/^\/wiki\/([a-z0-9-]+)/);

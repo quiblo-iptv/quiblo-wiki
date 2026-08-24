@@ -38,17 +38,20 @@ jobs:
 
       # A project site is served from /<repo>/, so the base href has to match or every
       # asset 404s. Derived from the repository name rather than hardcoded.
+      #
+      # The build prerenders every route into its own HTML file. That is what makes the site
+      # indexable: GitHub Pages serves a file at 200, and serves anything without one at 404,
+      # and a crawler throws a 404 away before it runs the JavaScript that would have drawn
+      # the page. Before this, every route but the front page was a 404.
       - run: npx ng build --configuration production --base-href "/${GITHUB_REPOSITORY#*/}/"
 
-      # GitHub Pages has no routing fallback, so a deep link would 404 on refresh. Serving
-      # index.html as the 404 page hands the URL back to the Angular router.
-      - run: cp dist/quiblo-wiki/browser/index.html dist/quiblo-wiki/browser/404.html
-
-      # Sitemap and robots, with the real public origin so the URLs in them resolve.
+      # Sitemap and robots, with the real public origin so the URLs in them resolve. This
+      # also fails the build if the pages that were built and the pages the content declares
+      # are not the same set.
       - run: node tools/seo.mjs "${{ steps.pages.outputs.base_url }}"
 
-      # Stops Jekyll eating files and directories beginning with an underscore.
-      - run: touch dist/quiblo-wiki/browser/.nojekyll
+      # 404.html for paths that genuinely have no page, and .nojekyll.
+      - run: node tools/pages.mjs
 
       - uses: actions/upload-pages-artifact@v3
         with:

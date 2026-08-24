@@ -3,12 +3,13 @@
 <head>
   <meta charset="utf-8">
   <!--
-    What a crawler sees before any JavaScript runs.
+    The template every page's head is rendered from, and the head of the 404 page as it ships.
 
-    `SeoService` rewrites all of this per route, and modern crawlers execute the page and read
-    the rewritten version — but not all of them do, not on the first pass, and a link preview
-    generator almost never does. So the static copy has to be the front page's own tags rather
-    than a placeholder, because the front page is what an unrendered crawl lands on.
+    The build prerenders each route, so `SeoService` has already replaced the title, the
+    description and the canonical link by the time a file is written — a crawler that runs no
+    JavaScript still reads that page's own tags rather than these. What is left here is the
+    front page's version, because the client-render shell keeps it verbatim and that shell is
+    what a mistyped URL lands on.
   -->
   <title>Quiblo — free, open source IPTV player for Android and Android TV</title>
   <base href="/">

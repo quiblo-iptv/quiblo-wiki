@@ -8,9 +8,12 @@
  *
  * Two behaviours it has that a plain static file server does not:
  *
- *   1. **A single-page-app fallback.** Any path that is not a file returns `index.html`, so
- *      a deep link like /wiki/the-database works on a fresh load rather than 404ing. This is
- *      the same trick the GitHub Pages workflow performs by copying index.html to 404.html.
+ *   1. **It answers the way GitHub Pages answers.** A directory serves its `index.html` with
+ *      status 200, and only a path with no file behind it falls back — to `404.html`, with
+ *      status **404**, which is what the real host sends. Serving the fallback as 200 would
+ *      hide the exact defect this build exists to fix: a crawler discards a 404 without
+ *      running the JavaScript that would have rendered the page, so a local server that
+ *      answers everything with 200 cannot tell you whether the site is indexable.
  *   2. **It binds to 0.0.0.0 and prints the LAN addresses**, so a phone on the same network
  *      can reach it.
  *
@@ -43,26 +46,29 @@ async function resolveFile(urlPath) {
   const candidate = normalize(join(ROOT, decodeURIComponent(urlPath)));
   if (!candidate.startsWith(ROOT)) return null;
 
-  try {
-    const found = await stat(candidate);
-    if (found.isFile()) return candidate;
-  } catch {
-    /* fall through to the SPA fallback */
+  for (const path of [candidate, join(candidate, 'index.html')]) {
+    try {
+      const found = await stat(path);
+      if (found.isFile()) return path;
+    } catch {
+      /* try the next candidate, then fall through to the 404 page */
+    }
   }
   return null;
 }
 
 const server = createServer(async (request, response) => {
   const urlPath = new URL(request.url ?? '/', 'http://localhost').pathname;
-  const file = (await resolveFile(urlPath)) ?? join(ROOT, 'index.html');
-  const type = TYPES[extname(file)] ?? 'application/octet-stream';
+  const file = await resolveFile(urlPath);
+  const served = file ?? join(ROOT, '404.html');
+  const type = TYPES[extname(served)] ?? 'application/octet-stream';
 
-  response.writeHead(200, {
+  response.writeHead(file ? 200 : 404, {
     'Content-Type': type,
-    // Hashed bundles may be cached hard; index.html must not be, or a rebuild is invisible.
-    'Cache-Control': file.endsWith('index.html') ? 'no-store' : 'public, max-age=3600',
+    // Hashed bundles may be cached hard; HTML must not be, or a rebuild is invisible.
+    'Cache-Control': served.endsWith('.html') ? 'no-store' : 'public, max-age=3600',
   });
-  createReadStream(file).pipe(response);
+  createReadStream(served).pipe(response);
 });
 
 server.listen(PORT, '0.0.0.0', () => {

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { DOCUMENT, Component, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { API } from './api/content';
 import { WIKI } from './content';
@@ -14,6 +14,7 @@ import { ThemeService } from './core/theme.service';
 })
 export class App {
   private readonly router = inject(Router);
+  private readonly document = inject(DOCUMENT);
 
   constructor() {
     // Titles, descriptions and canonical links per route. One HTML file serves every page,
@@ -39,7 +40,7 @@ export class App {
     // After navigation, not during: the target does not exist in the DOM until the new page
     // has rendered, and scrolling to it before then silently does nothing.
     requestAnimationFrame(() => {
-      document.getElementById(hit.anchor)?.scrollIntoView({ block: 'start' });
+      this.document.getElementById(hit.anchor)?.scrollIntoView({ block: 'start' });
     });
 
     this.search.query.set('');
