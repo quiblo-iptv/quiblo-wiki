@@ -22,6 +22,7 @@
 
 import { readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import { execSync } from 'node:child_process';
 
 const OUT = 'dist/quiblo-wiki/browser';
 const origin = (process.argv[2] ?? 'http://localhost:4321').replace(/\/$/, '');
@@ -31,8 +32,11 @@ if (!existsSync(OUT)) {
   process.exit(1);
 }
 
+const today = new Date().toISOString().slice(0, 10);
+const routeDates = mapDeclaredRoutesWithDates();
+
 const built = prerenderedPaths(OUT);
-const declared = declaredPaths();
+const declared = [...routeDates.keys()].sort();
 
 const missing = declared.filter((path) => !built.includes(path));
 const extra = built.filter((path) => !declared.includes(path));
@@ -49,17 +53,16 @@ if (missing.length || extra.length) {
 // costs every page in the site a hop and reports as "page with redirect" rather than indexed.
 const urls = built.map((path) => ({
   loc: path === '/' ? `${origin}/` : `${origin}${path}/`,
+  lastmod: routeDates.get(path) ?? today,
   priority: priorityFor(path),
 }));
-
-const today = new Date().toISOString().slice(0, 10);
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls
   .map(
     (url) =>
-      `  <url>\n    <loc>${url.loc}</loc>\n    <lastmod>${today}</lastmod>\n    <priority>${url.priority}</priority>\n  </url>`,
+      `  <url>\n    <loc>${url.loc}</loc>\n    <lastmod>${url.lastmod}</lastmod>\n    <priority>${url.priority}</priority>\n  </url>`,
   )
   .join('\n')}
 </urlset>
@@ -97,30 +100,56 @@ function prerenderedPaths(root) {
 }
 
 /**
- * Every page the content declares, as the same route paths.
+ * Every page the content declares, mapped to its source file's last modified Git date (YYYY-MM-DD).
  *
- * The directories are read rather than the files named, because naming them is what went
- * wrong: a new content file is picked up here the moment it exists.
+ * Inspects Git commit timestamps for each source file so that search engines can prioritize
+ * crawling recently updated articles over unchanged ones.
  */
-function declaredPaths() {
-  const slugs = readAll('src/app/content', /slug:\s*'([a-z0-9-]+)'/g);
-  const ids = readAll('src/app/api/content', /^\s{4}id:\s*'([a-z0-9-]+)'/gm);
+function mapDeclaredRoutesWithDates() {
+  const fileDates = new Map();
+  const getGitDate = (filePath) => {
+    if (fileDates.has(filePath)) return fileDates.get(filePath);
+    try {
+      const out = execSync(`git log -1 --format=%cs -- "${filePath}"`, {
+        encoding: 'utf8',
+        stdio: ['pipe', 'pipe', 'ignore'],
+      }).trim();
+      if (/^\d{4}-\d{2}-\d{2}$/.test(out)) {
+        fileDates.set(filePath, out);
+        return out;
+      }
+    } catch {}
+    fileDates.set(filePath, today);
+    return today;
+  };
 
-  return [
-    '/',
-    '/api',
-    ...slugs.map((slug) => `/wiki/${slug}`),
-    ...ids.map((id) => `/api/${id}`),
-  ].sort();
-}
+  const dates = new Map();
+  dates.set('/', getGitDate('src/app/pages/home.ts'));
+  dates.set('/api', getGitDate('src/app/api/content/index.ts'));
 
-function readAll(directory, pattern) {
-  return readdirSync(directory)
-    .filter((name) => name.endsWith('.ts') && !name.endsWith('.spec.ts'))
-    .flatMap((name) => {
-      const source = readFileSync(join(directory, name), 'utf8');
-      return [...source.matchAll(new RegExp(pattern))].map((match) => match[1]);
-    });
+  for (const name of readdirSync('src/app/content')) {
+    if (name.endsWith('.ts') && !name.endsWith('.spec.ts')) {
+      const fullPath = join('src/app/content', name);
+      const source = readFileSync(fullPath, 'utf8');
+      const date = getGitDate(fullPath);
+      for (const match of source.matchAll(/slug:\s*'([a-z0-9-]+)'/g)) {
+        dates.set(`/wiki/${match[1]}`, date);
+      }
+    }
+  }
+
+  for (const name of readdirSync('src/app/api/content')) {
+    if (name.endsWith('.ts') && !name.endsWith('.spec.ts')) {
+      const fullPath = join('src/app/api/content', name);
+      const source = readFileSync(fullPath, 'utf8');
+      const date = getGitDate(fullPath);
+      for (const match of source.matchAll(/^\s{4}id:\s*'([a-z0-9-]+)'/gm)) {
+        dates.set(`/api/${match[1]}`, date);
+      }
+    }
+  }
+
+  return dates;
 }
 
 function priorityFor(path) {
