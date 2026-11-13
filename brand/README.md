@@ -10,16 +10,18 @@ node tools/brand.mjs
 
 ## The mark
 
-**It is the app's launcher icon, coordinate for coordinate.** The three paths come from
-`app/src/main/res/drawable/ic_launcher_foreground.xml` in the Android repository, in that
-drawable's own 108x108 viewport, so they can be compared with the XML line by line rather than
-trusted. **If the app's icon changes, change those three paths here and nothing else moves.**
+**It is the app's launcher icon, coordinate for coordinate.** The mark and the light inside it
+are the two paths in `app/src/main/res/drawable/ic_launcher_foreground.xml` in the Android
+repository, and the name is the strokes `QuibloWordmark.kt` draws, as `tools/brand_vectors.py`
+writes them into the TV banner. **If the app's mark changes, change `MARK`, `COUNTER`,
+`WORD_STROKES` and `WORD_DOT` in the script and nothing else moves.**
 
-A Q that is also a play button: the ring reads as the letter, the triangle as a player, the
-tail finishes the Q.
+A television screen whose corner turns into the tail of a Q, with a warm light inside it. The
+name is lowercase and drawn on the mark's grid, so every bowl is a small screen and nothing
+depends on a font being installed.
 
-Colours: brand `#4A4FBF` — which is `ic_launcher_background` and `tv_banner_background`, the
-same value in both applications — on white.
+Colours, from `QuibloColours` in the app: ink `#0B0C10`, paper `#F3F1EC`, and the one colour,
+the tungsten light `#FFB648`, hottest at `#FFD58A` and fading to ember `#FF6A3D`.
 
 ## What to use where
 
@@ -29,8 +31,8 @@ same value in both applications — on white.
 | `quiblo-icon-rounded-512.png` | Only for a slot that does **no** masking of its own — see the note below |
 | `quiblo-icon-512.png` | App listing, Play Store, anywhere asking for a 512 icon |
 | `quiblo-icon-256.png` / `-192` / `-128` / `-64` | Smaller square slots |
-| `quiblo-mark-512.png` and smaller | The mark with **no background, in indigo** — for light pages |
-| `quiblo-mark-white-512.png` and smaller | The same with **no background, in white** — for dark pages |
+| `quiblo-mark-512.png` and smaller | The mark with **no background, in ink** — for light pages |
+| `quiblo-mark-white-512.png` and smaller | The same with **no background, in paper** — for dark pages |
 | `quiblo-cover-1600x400.png` | Any cover slot. Centred deliberately — a banner is cropped to its middle on a phone |
 | `quiblo-wordmark-1280x320.png` | Any banner slot with the tagline |
 | `quiblo-wordmark-800x200.png` | Any banner slot without it |

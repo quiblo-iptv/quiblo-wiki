@@ -7,15 +7,16 @@
  * wrong size, then cropped by hand for the next place that needs it. So the shape lives here
  * as geometry and every file below is rendered from it.
  *
- * **The geometry is copied from `ic_launcher_foreground.xml`, coordinate for coordinate**, and
- * that is the whole point of this file. The launcher icon is the one people already have on
- * their home screen; anything drawn "in the same spirit" is a second logo, and two logos is
- * how a project ends up looking like two projects. The Android drawable is authored in a
- * 108x108 viewport, so that viewport is what is used here rather than a redrawn one — if the
- * app's icon changes, change these three paths to match and nothing else has to move.
+ * **The geometry is copied from the app, coordinate for coordinate**, and that is the whole
+ * point of this file. The mark and the light inside it are the two paths in
+ * `ic_launcher_foreground.xml`; the name is the strokes in `QuibloWordmark.kt`, as
+ * `tools/brand_vectors.py` writes them into the TV banner. Anything drawn "in the same spirit"
+ * is a second logo, and two logos is how a project ends up looking like two projects. If the
+ * app's mark changes, replace `MARK`, `COUNTER`, `WORD_STROKES` and `WORD_DOT` with the new
+ * ones and nothing else has to move.
  *
- * A Q that is also a play button: the ring reads as the letter, the triangle as a player, and
- * the tail finishes the Q. White on `#4A4FBF`, exactly as the app has it.
+ * The mark is a television screen whose corner turns into the tail of a Q, with a warm light
+ * inside it. Everything is ink and paper; the only colour is that light.
  *
  * Rendered with `rsvg-convert` rather than a headless browser: this is flat vector art, a
  * browser would have to be installed to draw it, and the pixels come out the same.
@@ -29,71 +30,82 @@ import { join } from 'node:path';
 
 const OUT = 'brand';
 
-/*
- * The app's own two colours, and nowhere else are they written down on this side.
- * `BRAND` is `ic_launcher_background` and `tv_banner_background`, which are the same value in
- * both applications.
- */
-const BRAND = '#4A4FBF';
-const ON_BRAND = '#FFFFFF';
-const MUTED_ON_BRAND = '#c9cbf0';
+import {
+  INK, INK_WARM, PAPER, MUTED_PAPER, GLOW, GLOW_CORE, EMBER,
+  MARK, COUNTER, WORD_STROKES, WORD_DOT, WORD_STROKE,
+} from './brand-geometry.mjs';
+
+let gradients = 0;
 
 /**
- * The three paths from `ic_launcher_foreground.xml`, unchanged.
+ * The light inside the screen, as the launcher draws it.
  *
- * In the drawable's own 108x108 coordinates, so they can be compared with the XML line by line
- * rather than trusted. Everything that needs them at another size wraps them in a transform.
+ * A fresh id every time, because one SVG can hold more than one mark.
  */
-const foreground = (colour) => `
-  <!-- The ring: the body of the Q. -->
-  <path d="M36,54 a18,18 0 1,0 36,0 a18,18 0 1,0 -36,0"
-        fill="none" stroke="${colour}" stroke-width="5"/>
-
-  <!-- The tail, breaking the ring at the lower right. -->
-  <path d="M64,64 L74,74"
-        fill="none" stroke="${colour}" stroke-width="5" stroke-linecap="round"/>
-
-  <!-- The play mark. -->
-  <path d="M49,45 L49,63 L65,54 Z" fill="${colour}"/>
-`;
-
-const FOREGROUND = foreground(ON_BRAND);
+function light() {
+  const id = `light${gradients++}`;
+  return {
+    def: `<radialGradient id="${id}" gradientUnits="userSpaceOnUse" cx="50" cy="54" r="33">
+      <stop offset="0" stop-color="${GLOW_CORE}"/>
+      <stop offset="0.45" stop-color="${GLOW}"/>
+      <stop offset="0.8" stop-color="${EMBER}" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="${EMBER}" stop-opacity="0"/>
+    </radialGradient>`,
+    fill: `url(#${id})`,
+  };
+}
 
 /**
- * The icon in a 512 box.
+ * The mark with its light, in the mark's own 100-unit box.
  *
- * [solid] fills the plate behind it. An app icon and an organisation avatar both need that; a
- * favicon on a page whose colour it does not control needs the mark alone, so it is a switch
+ * [dark] fills the screen with ink under the light. On a plate the plate already does that;
+ * on a transparent ground the light was drawn over whatever the page is, and on white its
+ * ember edge turned a washed-out pink. The splash inks the screen the same way.
+ */
+function markGroup(colour, transform, { dark = false } = {}) {
+  const glow = light();
+  const screen = dark ? `<path d="${COUNTER}" fill="${INK}"/>` : '';
+  return {
+    defs: glow.def,
+    body: `<g transform="${transform}">
+    ${screen}
+    <path d="${COUNTER}" fill="${glow.fill}"/>
+    <path d="${MARK}" fill="${colour}"/>
+  </g>`,
+  };
+}
+
+/** The ink plate, warmed in the middle the way the launcher background is. */
+function plate(width, height, radius = 0) {
+  const r = Math.hypot(width, height) / 2;
+  return {
+    defs: `<radialGradient id="plate" gradientUnits="userSpaceOnUse" cx="${width / 2}" cy="${height / 2}" r="${r}">
+      <stop offset="0" stop-color="${INK_WARM}"/>
+      <stop offset="1" stop-color="${INK}"/>
+    </radialGradient>`,
+    body: `<rect width="${width}" height="${height}" rx="${radius}" fill="url(#plate)"/>`,
+  };
+}
+
+/**
+ * The icon in a 108 box.
+ *
+ * [solid] lays the ink plate behind it. An app icon and an organisation avatar both need that;
+ * a mark on a page whose colour it does not control needs the mark alone, so it is a switch
  * rather than two drawings that will drift.
  *
- * **The foreground is scaled up when there is no plate.** An adaptive icon reserves the outer
- * third for the launcher to crop, so the drawable only fills the middle 66 of its 108 — which
- * is correct on a home screen and looks like a mistake in a browser tab, where nothing is
- * going to crop it.
+ * **The mark is larger on the plate than on the launcher's canvas.** An adaptive icon draws it
+ * at 50 of 108 units because the launcher crops the outer third; nothing here crops that much,
+ * and at that size it looked lost in a GitHub avatar. 60 units still clears a circular mask
+ * with the tail inside it. Without a plate it fills the frame.
  */
-function mark({ solid = true, colour = ON_BRAND, radius = 0 } = {}) {
-  /*
-   * The plate is a **flat square by default, and that is the fix for a real artefact.**
-   *
-   * It was exported with rounded corners, which leaves the four corners transparent. Every
-   * place this icon goes then rounds it again — GitHub masks an avatar, a launcher masks an
-   * adaptive icon, a store masks a listing tile — and the page's own background shows through
-   * the gap between the two radii as four grey notches.
-   *
-   * So the export is square and whoever displays it does the rounding, which is the one
-   * arrangement that cannot disagree with itself. `radius` is there for the rare slot that
-   * masks nothing and wants the corners drawn in.
-   */
-  const plate = solid ? `<rect width="108" height="108" rx="${radius}" fill="${BRAND}"/>` : '';
-
-  // 1.0 inside a plate, so it matches the launcher exactly. 1.38 without one, which brings the
-  // 66-unit safe zone out to fill the frame.
-  const zoom = solid ? 1 : 1.38;
-  const offset = (108 - 108 * zoom) / 2;
-
+function mark({ solid = true, colour = PAPER, radius = 0 } = {}) {
+  const back = solid ? plate(108, 108, radius) : { defs: '', body: '' };
+  const fg = solid ? markGroup(colour, 'translate(24 24) scale(0.6)') : markGroup(colour, 'translate(4 4)', { dark: true });
   return `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 108 108">
-  ${plate}
-  <g transform="translate(${offset} ${offset}) scale(${zoom})">${foreground(colour)}</g>
+  <defs>${back.defs}${fg.defs}</defs>
+  ${back.body}
+  ${fg.body}
 </svg>
 `;
 }
@@ -101,71 +113,62 @@ function mark({ solid = true, colour = ON_BRAND, radius = 0 } = {}) {
 /**
  * The mark beside the name, for anywhere wider than it is tall.
  *
- * [centred] exists for a cover image and anything else that gets cropped: a banner is shown
- * full width on a desktop and cut to its middle on a phone, so a left-aligned lockup is
- * a lockup that disappears on half the devices that see it. Everything else stays left, where
- * a wordmark belongs.
+ * Laid out as the TV banner lays it out: the name's x-height sits on the mark's centre line, at
+ * the banner's proportions. [centred] exists for a cover image and anything else that gets
+ * cropped: a banner is shown full width on a desktop and cut to its middle on a phone, so a
+ * left-aligned lockup is a lockup that disappears on half the devices that see it.
  */
 function wordmark(width, height, { withTagline = true, centred = false } = {}) {
-  const markSize = height * 0.52;
-  const midY = (height - markSize) / 2;
-  const gap = height * 0.16;
-  const nameSize = height * 0.2;
+  const markSize = height * (withTagline ? 0.5 : 0.56);
+  const unit = markSize / 100;
+  const word = markSize * (0.46 / 80); // the banner: an 80-unit mark beside a 0.46-scale name
+  const gap = markSize * 0.21;
 
-  // The mark is scaled out of the safe zone here for the same reason as the plateless icon:
-  // a banner crops nothing, so the launcher's reserved margin is only empty space.
-  const zoom = 1.38;
-  const inset = (108 - 108 * zoom) / 2;
+  // Where the mark has paint, in its own box: the ring from 7.5, the tail out to 93.5.
+  const inkLeft = 7.5 * unit;
+  const inkWidth = 86 * unit;
+  const wordWidth = 297 * word;
 
-  /*
-   * How much of the mark's box carries paint.
-   *
-   * The artwork is drawn inside the adaptive-icon safe zone: only the middle 43 of its 108
-   * units are ever painted, and [zoom] pushes that out again. Centring on the box rather than
-   * on the ink put the lockup a dozen pixels right of the middle — small, and exactly the sort
-   * of small that reads as "not quite centred" without anyone being able to say why.
-   */
-  const inkWidth = markSize * (43 / 108) * zoom;
+  const taglineSize = height * 0.075;
+  const tagline = 'A free, open source IPTV player for Android and Android TV.';
+  // DejaVu Sans runs about half its size per character; close enough to centre a lockup.
+  const taglineWidth = withTagline ? tagline.length * taglineSize * 0.5 : 0;
+  const blockWidth = inkWidth + gap + Math.max(wordWidth, taglineWidth);
 
-  // Measured by the widest line, since there is no text metric here to ask. DejaVu Sans Bold
-  // runs about 0.6 of its size per character, and the tagline about 0.5 — close enough to
-  // centre a lockup, and the error is a few pixels on a 1600-wide canvas.
-  const nameWidth = 'Quiblo'.length * nameSize * 0.6;
-  const taglineWidth = withTagline
-    ? 'A free, open source IPTV player for Android and Android TV.'.length * height * 0.088 * 0.5
-    : 0;
-  const blockWidth = inkWidth + gap + Math.max(nameWidth, taglineWidth);
-
-  // Where the *ink* starts, and then the box placed so its ink lands there.
   const leftInk = centred ? (width - blockWidth) / 2 : height * 0.28;
-  const left = leftInk - (markSize - inkWidth) / 2;
+  const markX = leftInk - inkLeft;
   const textX = leftInk + inkWidth + gap;
 
-  /*
-   * The name's baseline, level with the mark beside it.
-   *
-   * With a tagline the two lines are a block and the pair straddles the middle. Alone, the name
-   * has to sit on the mark's own centre line — it was set at 0.46 of the height, which put its
-   * cap height a fifth of the picture above the middle of the circle next to it. Cap height in
-   * DejaVu Sans Bold is about 0.73 of the size.
-   */
-  const nameY = withTagline ? height * 0.46 : height / 2 + nameSize * 0.73 / 2;
+  // The mark is centred on the picture; the name's x-height straddles that line.
+  const cy = height / 2 - (withTagline ? taglineSize * 0.9 : 0);
+  const markY = cy - markSize / 2;
+  const baseline = cy + 27 * word;
 
-  const tagline = withTagline
-    ? `<text x="${textX}" y="${height * 0.63}" font-family="DejaVu Sans, Verdana, sans-serif"
-             font-size="${height * 0.088}" fill="${MUTED_ON_BRAND}">A free, open source IPTV player for Android and Android TV.</text>`
+  const fg = markGroup(PAPER, `translate(${markX} ${markY}) scale(${unit})`);
+  const spillX = markX + 50 * unit;
+
+  const line = withTagline
+    ? `<text x="${textX}" y="${baseline + 25 * word + taglineSize * 1.6}" font-family="DejaVu Sans, Verdana, sans-serif"
+        font-size="${taglineSize}" fill="${MUTED_PAPER}">${tagline}</text>`
     : '';
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-  <rect width="${width}" height="${height}" fill="${BRAND}"/>
-
-  <g transform="translate(${left}, ${midY}) scale(${markSize / 108})">
-    <g transform="translate(${inset} ${inset}) scale(${zoom})">${FOREGROUND}</g>
+  <defs>
+    ${fg.defs}
+    <radialGradient id="spill" gradientUnits="userSpaceOnUse" cx="${spillX}" cy="${cy}" r="${height * 0.9}">
+      <stop offset="0" stop-color="${GLOW}" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="${GLOW}" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="${width}" height="${height}" fill="${INK}"/>
+  <!-- The light, spilling from the mark onto the plate, as on the TV banner. -->
+  <rect width="${width}" height="${height}" fill="url(#spill)"/>
+  ${fg.body}
+  <g transform="translate(${textX} ${baseline}) scale(${word})">
+    <path d="${WORD_STROKES}" fill="none" stroke="${PAPER}" stroke-width="${WORD_STROKE}"/>
+    <path d="${WORD_DOT}" fill="${PAPER}"/>
   </g>
-
-  <text x="${textX}" y="${nameY}" font-family="DejaVu Sans, Verdana, sans-serif"
-        font-size="${nameSize}" font-weight="bold" fill="${ON_BRAND}">Quiblo</text>
-  ${tagline}
+  ${line}
 </svg>
 `;
 }
@@ -194,24 +197,24 @@ for (const size of [512, 256]) {
 /*
  * The mark with no plate, in two colours, because one is not enough.
  *
- * A white mark on a transparent ground is invisible on anything white — which is a browser
- * tab, a light README, and most of the places a transparent logo gets dropped. The first pass
- * here shipped only the white one and the 32-pixel favicon came out blank. So the indigo one
- * is the default and carries the plain name, and the white one is for dark grounds only.
+ * A paper mark on a transparent ground is invisible on anything white — which is a browser
+ * tab, a light README, and most of the places a transparent logo gets dropped. So the ink one
+ * is the default and carries the plain name, and the white one is for dark grounds only. Both
+ * keep the light: it is the one colour the brand has.
  */
-console.log('Mark — transparent ground, indigo, for light backgrounds:');
+console.log('Mark — transparent ground, ink, for light backgrounds:');
 for (const size of [512, 180, 64, 32, 16]) {
-  render(mark({ solid: false, colour: BRAND }), `quiblo-mark-${size}.png`, size, size);
+  render(mark({ solid: false, colour: INK }), `quiblo-mark-${size}.png`, size, size);
 }
 
-console.log('Mark — transparent ground, white, for dark backgrounds:');
+console.log('Mark — transparent ground, paper, for dark backgrounds:');
 for (const size of [512, 180, 64]) {
   render(mark({ solid: false }), `quiblo-mark-white-${size}.png`, size, size);
 }
 
 console.log('Wordmark — anywhere wider than it is tall:');
-// 1600x400 is what a cover slot asks for. Anything else wanting a banner wants roughly this
-// shape, and this one is centred because a cover is cropped to its middle on a phone.
+// 1600x400 is what a cover slot asks for. Centred, because a cover is cropped to its middle on
+// a phone.
 render(wordmark(1600, 400, { centred: true }), 'quiblo-cover-1600x400.png', 1600, 400);
 render(wordmark(1280, 320), 'quiblo-wordmark-1280x320.png', 1280, 320);
 // Centred: this is the one the organisation profile shows, and a profile README centres its
