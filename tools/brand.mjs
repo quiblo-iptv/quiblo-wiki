@@ -202,6 +202,13 @@ for (const size of [512, 256]) {
  * is the default and carries the plain name, and the white one is for dark grounds only. Both
  * keep the light: it is the one colour the brand has.
  */
+/*
+ * The icon iOS puts on a home screen, at the one size it asks for, and at the path the site's
+ * head names. Plated, because iOS fills a transparent corner with black. It used to be drawn
+ * by hand outside this script, which is how it was still the old logo after a rebrand.
+ */
+render(mark(), '../public/apple-touch-icon.png', 180, 180);
+
 console.log('Mark — transparent ground, ink, for light backgrounds:');
 for (const size of [512, 180, 64, 32, 16]) {
   render(mark({ solid: false, colour: INK }), `quiblo-mark-${size}.png`, size, size);

@@ -3,39 +3,45 @@
  * One palette expressed twice. Every colour in the app is a token, so a theme change is a
  * change to this block and nowhere else — and nothing can be styled in a way that only
  * works in one of the two.
+ *
+ * The palette is the app's (`QuibloColours`): ink, warm paper, and one colour — the tungsten
+ * light inside the mark. On ink the accent is that light itself. On paper it is the same hue
+ * taken down until a link still reads at body size, because #FFB648 on white does not.
  */
 
 :root,
 :root[data-theme='dark'] {
   color-scheme: dark;
 
-  --bg: #0d0e12;
-  --bg-raised: #14161c;
-  --bg-sunken: #090a0d;
-  --border: #262a33;
-  --border-strong: #363c48;
-  --text: #e7e9ee;
-  --text-muted: #98a0b0;
-  --text-faint: #6b7484;
-  --accent: #9fa4ff;
-  --accent-soft: rgba(159, 164, 255, 0.14);
-  --mark: rgba(159, 164, 255, 0.3);
+  --bg: #0b0c10;
+  --bg-raised: #14161d;
+  --bg-sunken: #08090c;
+  --border: #24252b;
+  --border-strong: #35363d;
+  --text: #f3f1ec;
+  --text-muted: #a6a39d;
+  --text-faint: #77746e;
+  --accent: #ffb648;
+  --accent-soft: rgba(255, 182, 72, 0.12);
+  --mark: rgba(255, 182, 72, 0.28);
+  --display: Outfit, ui-sans-serif, system-ui, sans-serif;
 }
 
 :root[data-theme='light'] {
   color-scheme: light;
 
-  --bg: #fbfbfd;
+  --bg: #faf9f6;
   --bg-raised: #ffffff;
-  --bg-sunken: #f1f2f6;
-  --border: #e2e4ea;
-  --border-strong: #c9cdd7;
-  --text: #1a1c22;
-  --text-muted: #5a616f;
-  --text-faint: #868d9c;
-  --accent: #4a4fd0;
-  --accent-soft: rgba(74, 79, 208, 0.1);
-  --mark: rgba(74, 79, 208, 0.18);
+  --bg-sunken: #f0eee8;
+  --border: #e4e1da;
+  --border-strong: #cdc9c0;
+  --text: #1a1b1f;
+  --text-muted: #5c5a55;
+  --text-faint: #7a7771;
+  --accent: #9a5300;
+  --accent-soft: rgba(255, 182, 72, 0.18);
+  --mark: rgba(255, 182, 72, 0.4);
+  --display: Outfit, ui-sans-serif, system-ui, sans-serif;
 }
 
 * {
