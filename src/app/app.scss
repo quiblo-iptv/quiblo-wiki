@@ -61,14 +61,25 @@
  * the placeholder letter did, to look deliberate rather than dropped in.
  */
 .topbar__mark {
-  width: 26px;
+  width: 28px;
+  height: 28px;
+  flex: none;
+}
+
+/* The drawn name, its x-height on the mark's centre line, as the README lockup sets it. */
+.topbar__word {
+  width: 66px;
   height: 26px;
-  color: var(--accent);
+  flex: none;
+  margin-top: 4px;
 }
 
 .topbar__brandMuted {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 1.05rem;
   color: var(--text-faint);
-  font-weight: 400;
+  margin-top: -1px;
 }
 
 /* --- search ------------------------------------------------------------- */
